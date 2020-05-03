@@ -1,0 +1,24 @@
+Draw 2:
+Draw 3:
+Draw 4:
+Draw 5:
+Play 2:
+Play 3:
+Play 4:
+Play All:
+Hand Limit 0:
+Hand Limit 1:
+Hand Limit 2:
+Keeper Limit 2:
+Keeper Limit 3:
+Keeper Limit 4:
+Double Agenda:A second Goal can now be played. After this, whoever plays a new Goal or discards this card must choose which Goal is discarded.
+First Play Random:The first card you play must be chosen at random from your hand by the player on your left. Ignore this rule if, at the start of your turn, current Rules only allow one Play.
+No-Hand Bonus:If you have no cards in your hand at the start of your turn, draw a new hand of 3 cards before observing the current draw rule.
+Poor Bonus:If one player has fewer Keepers on the table than any other player, that person draws 1 extra card.
+Rich Bonus:If one player has more Keepers on the table than any other player, that person may play 1 extra card. In the event of a tie, no one receives the bonus.
+Inflation:Any time a numeral is seen on another card, add one to that numeral. For example, 1 becomes 2, while one remains one. This does affect the Basic Rules.
+Party Bonus:If someone has the Party on the table, all players may Draw 1 extra card and may Play 1 extra card during their turns.
+Get On With It!:At any time before your final Play you may discard your entire hand and draw a new hand of 3 cards. This is a free action but if you take it, your turn ends immediately.
+Silver Lining:Creepers do not prevent you from winning.
+You Also Need a Potato:If the Radioactive Potato is on the table, it does not prevent victory - instead, you must have the Potato to win, along with the other Goal conditions.

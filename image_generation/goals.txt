@@ -1,0 +1,29 @@
+10 Cards in Hand:If someone has 10 or more cards in their hand, then the player with the most wins.
+5 Keepers:If someone has 5 or more Keepers on the table, then the person with the most wins.
+All You Need is Love:Love (No other Keepers)
+Appliances:Television + Toaster
+Baked Goods:Bread + Cookies
+Bed Time:Sleep + Time
+Brain (no TV):Brain (No one has TV down)
+Chocolate Cookies:Chocolate + Cookies
+Chocolate Milk:Chocolate + Milk
+Death by Chocolate:Death + Chocolate
+Dreamland:Sleep + Dreams
+Hearts and Minds:Love + Brain
+Hippyism:Peace + Love
+Milk and Cookies:Milk + Cookies
+Night and Day:Moon + Sun
+Peace (no War): Peace (No one has War down)
+Rocket Science:Rocket + Brain
+Rocket to the Moon:Rocket + Moon
+Squishy Chocolate:Chocolate + Sun
+Time is Money:Time + Money
+Toast:Bread + Toaster
+War = Death:War + Death
+Winning the Lottery:Dreams + Money
+Mind's Eye:Brain + Eye
+Dough:Bread + Money
+All That Is Certain:Death + Taxes
+Interstellar Spacecraft:Rocket + Cosmos
+Star Gazing:Cosmos + Eye
+Party Snacks:Party + (Bread OR Chocolate OR Cookies)

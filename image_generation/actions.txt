@@ -1,0 +1,22 @@
+Jackpot:Draw 3 extra cards!
+Discard and Draw:Discard your entire hand, then draw as many cards as you discarded. Do not count this card in the count.
+Draw 2 and use 'em:Set your hand aside. Draw 2 cards, play them in any order you choose, then pick up your hand and continue with your turn.
+Draw 3, Play 2 of them:Set your hand aside. Draw 3 cards and play 2 of them. Discard the last card.
+Everybody Gets 1:Set your hand aside. Count the number of players in the game. Draw enough cards to give 1 card to each player, then do so. You decide who gets what.
+Exchange Keepers:Pick any Keeper another player has on the table and exchange it for one that you have on the table. If you have no Keepers in play, or if no one else has a Keeper, nothing happens.
+Let's Do That Again:Search through the discard pile. Take any Action or New Rule card you wish, and immediately play it. Anyone may look through the discard pile at any time, but the order should not be changed.
+Let's Simplify:Discard your choice of up to half (rounded up) of the New Rule cards currently in play.
+No Limits:Discard all Hand and Keeper Limit rules currently in play.
+Rotate Hands:All players pass their hands to the player next to them. You decide which direction.
+Rules Reset:Reset to the Basic Rules. Discard all New Rule cards, and leave only the Basic Rules in play.
+Take Another Turn:Take another turn as soon as you finish this one.
+Taxation:Each player must choose 1 card from their hand and give it to you.
+Trade Hands:Trade your hand for the hand of one of your opponents.
+Trash a New Rule:Select one of the New Rule cards in play and place it in the discard pile.
+Use What You Take:Take a card at random from another player's hand, and play it.
+Creeper Sweeper:All Creepers in play are discarded.
+Trash Something:Take your choice of any Keeper or Creeper from in front of any player and put it on the discard pile. If no one has any Keepers or Creepers, nothing happens.
+Steal Something:Take your choice of any Keeper or Creeper from in front of another player and put it in front of you.
+Mix It All Up:Gather up all Keepers and Creepers on the table, shuffle them together, and deal them back out to all players, starting with yourself.
+Today's Special!:Set your hand aside and draw 3 cards. If today is your birthday, play all 3 cards. If today is a holiday or special anniversary, play 2 of the cards. If it's just another day, play only 1 card. Discard the remainder.
+It's Trash Day:All players may choose to discard whatever cards they wish, from their hands or from the table in front of them.
