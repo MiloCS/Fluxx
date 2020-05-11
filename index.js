@@ -8,6 +8,11 @@ app.use(express.static(__dirname + '/'));
 let players = new Map();
 
 io.on('connection', function(socket) {
+	socket.on('disconnecting', function(data) {
+		Object.keys(socket.rooms).forEach(function(x) {
+			sendPlayerList(x, Object.keys(io.sockets.adapter.rooms[x].sockets).filter(x=>(x!=socket.id)).map(x => players.get(x)));
+		});
+	});
 	socket.on('createRoom', function(roomCode, name) {
 		if (Object.keys(io.sockets.adapter.rooms).includes(roomCode)) {
 			socket.emit('roomCreationFailed', roomCode);
@@ -22,6 +27,7 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('joinRoom', function(roomCode, name) {
+
 		if (!Object.keys(io.sockets.adapter.rooms).includes(roomCode)) {
 			socket.emit('roomJoinFailed', roomCode);
 		}
@@ -35,7 +41,11 @@ io.on('connection', function(socket) {
 });
 
 function updatePlayerList(roomCode) {
-	io.to(roomCode).emit('playerList', Object.keys(io.sockets.adapter.rooms[roomCode].sockets).map(x => players.get(x)));
+	sendPlayerList(roomCode, Object.keys(io.sockets.adapter.rooms[roomCode].sockets).map(x => players.get(x)));
+}
+
+function sendPlayerList(roomCode, list) {
+	io.to(roomCode).emit('playerList', list);
 }
 
 
