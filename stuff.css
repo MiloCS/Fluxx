@@ -1,0 +1,137 @@
+html {
+    background-color: #f5f5f5;
+}
+
+body {
+	overflow: hidden;
+}
+
+#title {
+	font-family: Cinzel, Jost, Sans-Serif;
+	font-size: 40px;
+	margin: 15px;
+}
+
+#logo {
+	position: relative;
+	top: 8px;
+}
+
+.modetitle {
+	font-family: Cinzel, Jost, Sans-Serif;
+}
+
+.rooms {
+    display: inline-block;
+    margin: 10px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.line {
+    display: inline-block;
+    border-left: 1px solid grey;
+    height: 150px;
+    overflow: hidden;
+}
+
+#createGameButton,
+#joinGameButton {
+    color: white;
+    background-color: black;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+input {
+	padding-left: 3px; 
+	line-height: 25px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: 3px solid grey;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter";
+}
+
+input:focus {
+	outline: none;
+	box-shadow: 2pt 2pt grey;
+}
+
+.roomd {
+	margin: 5px;
+}
+
+#content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter";
+}
+
+#container {
+	height: 100%;
+}
+
+#errormodal {
+	display: none;
+	position: absolute;
+	bottom: 0px;
+	left:0px;
+	padding:10px;
+	width: 100%;
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter";
+	color: white;
+	background-color: red;
+}
+
+#closemodal {
+	cursor: pointer;
+	position:absolute;
+	right:30px;
+	bottom:10px;
+}
+
+#lobby {
+	display: none;
+}
+
+#roomname {
+	font-family: Cinzel, Jost, Sans-Serif;
+	font-size: 20px;
+	margin: 15px;
+}
+
+#roomid {
+	padding: 5px;
+	color: white;
+	background-color: #919191;
+}
+
+#playersheader {
+	font-family: Cinzel, Jost, Sans-Serif;
+	font-size: 20px;
+	margin: 15px;
+}
+
+#players {
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter";
+	font-size: 18px;
+	margin: 15px;
+	padding: 10px;
+	color: white;
+	background-color: #919191;
+}
+
+#startgamebutton {
+	background-color: black;
+	color: white;
+	font-family: "Courier New", Courier, "Lucida Sans Typewriter";
+	font-size: 18px;
+	border-radius: 6px;
+	margin: 10px;
+	padding: 5px;
+	display: inline-block;
+	cursor: pointer;
+}

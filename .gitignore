@@ -1,0 +1,5 @@
+node_modules/
+package.json
+package-lock.json
+image_generation/cards/
+image_generation/helveticab.ttf

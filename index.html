@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FluxxOnline</title>
+    <link rel="stylesheet" type="text/css" href="stuff.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jost">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cinzel">
+    <link rel="icon" href="Cards.png">
+</head>
+
+<body>
+    <div id="container">
+        <div id=title>
+            FluxxOnline
+            <img id="logo" src="Cards.png" width="40" height="40">
+        </div>
+        <div id="content">
+            <span class="rooms">
+                <div class="roomd modetitle" id="createGameTitle">Create Game</div>
+                <div>
+                	<div class="roomd"><input id="createcode" type="text" placeholder="Room Code"></div>
+                    <div class="roomd"><input id="createname" type="text" placeholder="Nickname"></div>
+                    <div class="roomd" id="createGameButton">Create</div>
+                </div>
+            </span>
+            <div class="line"></div>
+            <span class=rooms>
+                <div class="roomd modetitle" id="joinGameTitle">Join Game</div>
+                <div>
+                	<div class="roomd"><input id="joincode" type="text" placeholder="Room Code"></div>
+                    <div class="roomd"><input id="joinname" type="text" placeholder="Nickname"></div>
+                    <div class="roomd" id="joinGameButton">Join</div>
+                </div>
+            </span>
+    	</div>
+        <div id="lobby">
+            <div id="roomname">
+                You are in the lobby: <span id="roomid">horsepaste</span>
+            </div>
+            <div id="playersheader">Players:</div>
+            <div id="players"></div>
+            <div id="startgamebutton">Start Game</div>
+        </div>
+    </div>
+    <div id="errormodal"><div id="errortext">Something went wrong</div><span id="closemodal">&#x2715;</span></div>
+	</div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    const socket = io('http://localhost:3000');
+    //dealing with room creation and joining
+
+    //creating room action handling
+    $("#joinGameButton").click(function() {
+    	socket.emit('joinRoom', $("#joincode").val(), $("#joinname").val());
+    	$("#joincode").val('');
+    	$("#joinname").val('');
+    });
+    $("#createGameButton").click(function() {
+    	socket.emit('createRoom', $("#createcode").val(), $("#createname").val());
+    	$("#createcode").val('');
+    	$("#createname").val('');
+    });
+    socket.on('roomJoinFailed', function(code) {
+    	$("#errortext").text("The room you tried to enter doesn't exist");
+    	$("#errormodal").show();
+    });
+    socket.on('roomCreationFailed', function(code) {
+        $("#errortext").text("A room with that code already exists, try another");
+        $("#errormodal").show();
+    });
+    socket.on('roomJoined', function(code) {
+        $("#roomid").text(code);
+        $("#content").hide();
+        $("#lobby").show();
+    });
+    socket.on('roomCreated', function(code) {
+        $("#roomid").text(code);
+        $("#content").hide();
+        $("#lobby").show();
+    });
+    socket.on('playerList', function(list) {
+        $("#players").text('');
+        list.forEach(x => $("#players").append(" " + x));
+    });
+
+    $("#closemodal").click(function() {
+    	$("#errormodal").hide();
+    });
+    </script>
+</body>
+
+</html>
