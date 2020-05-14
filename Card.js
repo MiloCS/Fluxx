@@ -18,6 +18,10 @@ class NRule extends Card {
 }
 
 class DrawRule extends NRule {
+	constructor(name, draws) {
+		super(name);
+		this.d = draws;
+	}
 	onPlay(player, game) {
 		super.onPlay(player, game);
 		// stuff specific to Draw rules
@@ -25,13 +29,57 @@ class DrawRule extends NRule {
 }
 
 class PlayRule extends NRule {
+	constructor(name, plays) {
+		super(name);
+		this.p = plays;
+	}
 	onPlay(player, game) {
 		super.onPlay(player, game);
 		// stuff specific to Play rules
 	}
 }
 
+class LimRule extends NRule {
+	constructor(name, lim) {
+		super(name);
+		this.lim = lim;
+	}
+	onPlay(player, game) {
+		super.onPlay(player, game);
+		// stuff specific to limits, maybe just in KLim and HLim?
+	}
+}
+
+class LimRule extends NRule {
+	constructor(name, lim) {
+		super(name);
+		this.lim = lim;
+	}
+	onPlay(player, game) {
+		super.onPlay(player, game);
+		// stuff specific to limits, maybe just in KLim and HLim?
+	}
+}
+
+class HLimRule extends LimRule {
+	onPlay(player, game) {
+		super.onPlay(player, game);
+		// stuff specific to hand limits
+	}
+}
+
+class KLimRule extends LimRule {
+	onPlay(player, game) {
+		super.onPlay(player, game);
+		// stuff specific to keeper limits
+	}
+}
+
 class Action extends Card {
+	constructor(name, action) {
+		super(name);
+		this.a = action;
+	}
 	onPlay(player, game) {
 		super.onPlay(player, game);
 		// stuff specific for Action cards
@@ -41,6 +89,10 @@ class Action extends Card {
 // More action subclasses? Like (D3P2 & D2+U)
 
 class Keeper extends Card {
+	constructor(name, id) {
+		super(name);
+		this.kid = id
+	}
 	onPlay(player, game) {
 		super.onPlay(player, game);
 		// add keeper to players
@@ -49,7 +101,7 @@ class Keeper extends Card {
 
 class Goal extends Card {
 	constructor(name, wcon) {
-		super(name)
+		super(name);
 		this.wcon = wcon;
 	}
 	onPlay(player, game) {
@@ -57,12 +109,13 @@ class Goal extends Card {
 		// put goal in play
 	}
 	isMet() {
-		console.log("this is just a generic goal")
+		console.log("this is just a generic goal");
 		return null;
 	}
 }
 
 class TwoKeep extends Goal {
+	// wincon: [kid Y, kid Y]
 	isMet() {
 		// check players' keepers in wcon
 		// return player who has both or null
@@ -70,6 +123,7 @@ class TwoKeep extends Goal {
 }
 
 class OneKeep extends Goal {
+	// wincon: [kid Y, kid N]
 	isMet() {
 		// check that no one has the banned keeper
 		// return player with the keeper or null
@@ -77,7 +131,10 @@ class OneKeep extends Goal {
 }
 
 class SpecialGoal extends Goal {
+	// wincon: function
 	isMet() {
 		// call the function in wcon
 	}
 }
+
+export * from 'Card.js';
