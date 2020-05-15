@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
+import os
 
 pink = "#e069c1"
 green = "#c4e069"
@@ -34,7 +35,15 @@ def insert_newlines(str, width):
 			currlen += len(i) + 1
 	return newstr
 
-def generate_card(type, color, name, logo, text, outfile):
+def find_keeper_image(name):
+	if os.path.exists("keeper_images/" + name + ".png"):
+		return name + ".png"
+	elif os.path.exists("keeper_images/" + name + ".jpg"):
+		return name + ".jpg"
+	else:
+		raise Exception("couldn't find keeper image with allowed filetype")
+
+def generate_card(type, color, name, logo, text, outfile, keeper_image):
 	w = 200
 	h = 300
 
@@ -77,47 +86,59 @@ def generate_card(type, color, name, logo, text, outfile):
 	name_lines = processed_name.count("\n")
 	d.text((50, 10), type.upper(), fill="#000000", font=largefont)
 	d.multiline_text((50, h/2 - 20 - 20 *name_lines), processed_name, fill="#000000", font=font)
-	d.multiline_text((50, h/2 + 10), insert_newlines(text, 28), fill="#000000", font=timesfont)
+
+	if not keeper_image:
+		d.multiline_text((50, h/2 + 10), insert_newlines(text, 28), fill="#000000", font=timesfont)
+	else:
+		filename = find_keeper_image(name)
+		keeper = Image.open("keeper_images/" + filename).convert("RGBA")
+		width, height = keeper.size
+		whratio = float(height) / width
+		keeper = keeper.resize((100, int(100*whratio)), resample=Image.BILINEAR)
+		if (filename[-3:] == "jpg"):
+			img.paste(keeper, (60, 170))
+		else:
+			img.paste(keeper, (60, 170), keeper)
 
 	#rounded corners for a more authetic playing card effect
 	add_corners(img, 20)
 
 	img.save(outfile)
 
-#generate_card("New Rule", yellow, "Interstellar Spacecraft", "star.png", "X = X + 1!", "card.png")
+#main card generation with all the different card types
+if __name__ == "__main__":
+	with open("keepers.txt", "r") as f:
+		keepers = f.read().split("\n")
 
-with open("keepers.txt", "r") as f:
-	keepers = f.read().split("\n")
+	with open("goals.txt", "r") as f:
+		goals = f.read().split("\n")
 
-with open("goals.txt", "r") as f:
-	goals = f.read().split("\n")
+	with open("rules.txt", "r") as f:
+		rules = f.read().split("\n")
 
-with open("rules.txt", "r") as f:
-	rules = f.read().split("\n")
+	with open("actions.txt", "r") as f:
+		actions = f.read().split("\n")
 
-with open("actions.txt", "r") as f:
-	actions = f.read().split("\n")
+	for card in keepers:
+		generate_card("Keeper", green, card, "check.png", "", "cards/" + card.strip() + ".png", True)
 
-for card in keepers:
-	generate_card("Keeper", green, card, "check.png", "Filler keeper text while I'm still missing images", "cards/" + card.strip() + ".png")
+	for card in goals:
+		split = card.split(":")
+		name = split[0]
+		desc = split[1]
+		filename = name.replace(" ", "")
+		generate_card("Goal", pink, name, "checkbox.png", desc, "cards/" + filename + ".png", False)
 
-for card in goals:
-	split = card.split(":")
-	name = split[0]
-	desc = split[1]
-	filename = name.replace(" ", "")
-	generate_card("Goal", pink, name, "checkbox.png", desc, "cards/" + filename + ".png")
+	for card in rules:
+		split = card.split(":")
+		name = split[0]
+		desc = split[1]
+		filename = name.replace(" ", "")
+		generate_card("New Rule", yellow, name, "star.png", desc, "cards/" + filename + ".png", False)
 
-for card in rules:
-	split = card.split(":")
-	name = split[0]
-	desc = split[1]
-	filename = name.replace(" ", "")
-	generate_card("New Rule", yellow, name, "star.png", desc, "cards/" + filename + ".png")
-
-for card in actions:
-	split = card.split(":")
-	name = split[0]
-	desc = split[1]
-	filename = name.replace(" ", "")
-	generate_card("Action", blue, name, "arrow.png", desc, "cards/" + filename + ".png")
+	for card in actions:
+		split = card.split(":")
+		name = split[0]
+		desc = split[1]
+		filename = name.replace(" ", "")
+		generate_card("Action", blue, name, "arrow.png", desc, "cards/" + filename + ".png", False)

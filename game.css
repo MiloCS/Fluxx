@@ -1,0 +1,88 @@
+html {
+    background-color: #f5f5f5;
+}
+
+body {
+	overflow: hidden;
+}
+
+#title {
+	font-family: Cinzel, Jost, Sans-Serif;
+	font-size: 40px;
+	margin: 15px;
+}
+
+#logo {
+	position: relative;
+	top: 8px;
+}
+
+#container {
+	perspective: 500px;
+}
+
+#table {
+	width: 100%;
+	height: 50vh;
+	background-color: #e5e5e5;
+	border-radius: 10px;
+	margin:10px;
+	text-align: center;
+	font-size: 30px;
+	font-family: Cinzel, Jost, Sans-Serif;
+}
+
+#cards {
+	display: grid;
+	grid-template-columns: repeat(4, auto);
+	grid-gap: 50px;
+	transform: translate(0px, 200px);
+	transition: transform 100ms ease-in-out;
+	justify-content: center;
+}
+
+.card-face {
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	border-radius: 12px;
+	border: 1px solid black;
+	transition: transform 500ms ease-in-out;
+	backface-visibility: hidden;
+}
+
+.card {
+	position: relative;
+	display: inline;
+	margin: 5px;
+	border-radius: 12px;
+}
+
+#cards:active {
+	grid-gap: 100px;
+	transform: translate(0px, -50px);
+}
+
+.card-image {
+	position: absolute;
+	border-radius: 12px;
+}
+
+.card-back {
+	transform: rotateY(180deg);
+}
+
+.card-front {
+	transform: rotateY(0deg);
+}
+
+.card.covered .card-back {
+	transform: rotateY(0deg);
+}
+
+.card.covered .card-front {
+	transform: rotateY(-180deg);
+}

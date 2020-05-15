@@ -3,3 +3,5 @@ package.json
 package-lock.json
 image_generation/cards/
 image_generation/helveticab.ttf
+key.txt
+image_generation/keeper_images/

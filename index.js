@@ -13,6 +13,9 @@ io.on('connection', function(socket) {
 			sendPlayerList(x, Object.keys(io.sockets.adapter.rooms[x].sockets).filter(x=>(x!=socket.id)).map(x => players.get(x)));
 		});
 	});
+	socket.on('gamestart', function(code) {
+			io.to(code).emit('gamestart');
+	});
 	socket.on('createRoom', function(roomCode, name) {
 		if (Object.keys(io.sockets.adapter.rooms).includes(roomCode)) {
 			socket.emit('roomCreationFailed', roomCode);
