@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FluxxOnline</title>
+    <link rel="stylesheet" type="text/css" href="game.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jost">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Acme">
+    <link rel="icon" href="Cards.png">
+    <script defer type="text/javascript" src="view.js"></script>
+</head>
+
+<body>
+    <div id="container">
+        <div id=title>
+            FluxxOnline
+            <img id="logo" src="Cards.png" width="40" height="40">
+        </div>
+        <div id="table">
+            <div id="table-middle">
+                <div id="rules">RULES</div>
+                <span id="draw-pile">DRAW</span>
+                <span id="discard">DISCARD</span>
+                <span id="goal">GOAL</span>
+            </div>
+        </div>
+        <div id="cards">
+        </div>
+    </div>
+    <div id="card-modal">
+        <div id="modal-card-container"></div>
+        <div id="modal-close">&#x2715;</div>
+    </div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+</body>
+
+</html>

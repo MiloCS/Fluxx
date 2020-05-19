@@ -1,9 +1,14 @@
 var express = require('express');
 var app = express();
 var http = require('http').createServer(app);
+var https = require('https');
 var io = require('socket.io')(http);
 
-app.use(express.static(__dirname + '/'));
+app.get('/game', function(req, res) {
+	res.sendFile(__dirname + '/web/game.html')
+});
+
+app.use(express.static(__dirname + '/web/'));
 
 let players = new Map();
 
@@ -51,7 +56,14 @@ function sendPlayerList(roomCode, list) {
 	io.to(roomCode).emit('playerList', list);
 }
 
+let options = {
 
+}
+
+
+// https.createServer(options, app).listen(443, () => {
+// 	console.log('listening on https://localhost');
+// });
 http.listen(3000, () => {
      console.log('listening on localhost:3000');
 });

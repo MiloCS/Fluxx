@@ -120,25 +120,25 @@ if __name__ == "__main__":
 		actions = f.read().split("\n")
 
 	for card in keepers:
-		generate_card("Keeper", green, card, "check.png", "", "cards/" + card.strip() + ".png", True)
+		generate_card("Keeper", green, card, "check.png", "", "../web/cards/" + card.strip() + ".png", True)
 
 	for card in goals:
 		split = card.split(":")
 		name = split[0]
 		desc = split[1]
 		filename = name.replace(" ", "")
-		generate_card("Goal", pink, name, "checkbox.png", desc, "cards/" + filename + ".png", False)
+		generate_card("Goal", pink, name, "checkbox.png", desc, "../web/cards/" + filename + ".png", False)
 
 	for card in rules:
 		split = card.split(":")
 		name = split[0]
 		desc = split[1]
 		filename = name.replace(" ", "")
-		generate_card("New Rule", yellow, name, "star.png", desc, "cards/" + filename + ".png", False)
+		generate_card("New Rule", yellow, name, "star.png", desc, "../web/cards/" + filename + ".png", False)
 
 	for card in actions:
 		split = card.split(":")
 		name = split[0]
 		desc = split[1]
 		filename = name.replace(" ", "")
-		generate_card("Action", blue, name, "arrow.png", desc, "cards/" + filename + ".png", False)
+		generate_card("Action", blue, name, "arrow.png", desc, "../web/cards/" + filename + ".png", False)

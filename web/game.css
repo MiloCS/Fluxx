@@ -1,0 +1,140 @@
+* {
+	box-sizing: border-box;
+}
+
+html {
+	margin: 0;
+    background-color: #f5f5f5;
+}
+
+body {
+	margin: 0;
+	overflow: hidden;
+}
+
+#title {
+	font-family: "Acme", Jost, Sans-Serif;
+	font-size: 40px;
+	margin: 15px;
+	vertical-align: baseline;
+}
+
+#logo {
+	position: relative;
+	top: 8px;
+}
+
+#container {
+	margin: 0;
+	left: 0;
+	top: 0;
+	min-height: 100vh;
+	perspective: 500px;
+}
+
+#table {
+	width: 90vw;
+	height: 70vh;
+	/*background-image: url("woodtexture.jpg");*/
+	background-color: #f7efda;
+	border-radius: 10px;
+	border: 2px solid #70342e;
+	margin:4vw;
+	text-align: center;
+	font-size: 30px;
+	font-family: "Acme", Jost, Sans-Serif;
+}
+
+#cards {
+	cursor: pointer;
+	display: flex;
+	position: relative;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	transition: transform 100ms ease;
+}
+
+#cards:hover {
+	transform: translate(0px, -15px);
+}
+
+.card {
+	font-size: 0;
+	display: inline;
+	border-radius: 12px;
+	border: 2px solid black;
+	vertical-align: top;
+}
+
+#cards .card {
+	position: absolute;
+}
+
+#card-modal {
+	overflow: auto;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	display: none;
+	background-color: rgba(0, 0, 0, 0.8);
+}
+
+#modal-close {
+	cursor: pointer;
+	position: fixed;
+	font-size: 2em;
+	left: auto;
+	top: 5px;
+	right: 10px;
+	color: white;
+}
+
+#modal-card-container {
+	left: auto;
+	top: auto;
+	padding: 3em;
+	overflow: auto;
+	display: grid;
+	grid-template-columns: repeat(5, auto);
+	grid-gap: 1em;
+}
+
+#modal-card-container .card {
+	border: none;
+}
+
+#table-middle {
+	width: 60%;
+	justify-content: center;
+	align-items: center;
+}
+
+#rules, #draw-pile, #discard, #goal {
+	font-size: 0.5em;
+	color: #9e9e9e;
+	background-color: lightgrey;
+	margin: 3px;
+	padding: 2px;
+	border-radius: 2px;
+}
+
+
+/*flipping styling, may use later*/
+.card-back {
+	transform: rotateY(180deg);
+}
+
+.card-front {
+	transform: rotateY(0deg);
+}
+
+.card.covered .card-back {
+	transform: rotateY(0deg);
+}
+
+.card.covered .card-front {
+	transform: rotateY(-180deg);
+}
