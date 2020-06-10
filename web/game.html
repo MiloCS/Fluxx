@@ -17,21 +17,42 @@
             <img id="logo" src="logo.png" width="40" height="40">
         </div>
         <div id="table-container">
+            <div id="players-container"></div>
             <div id="table">
                 <div id="table-middle">
                     <div id="rules" class="playspace">
                         <div class="playspace-title">RULES</div>
+                        <div id="rule-cards"></div>
                     </div>
-                    <span id="draw-pile" class="playspace"><span class="playspace-title">DRAW</span></span>
-                    <span id="discard" class="playspace"><span class="playspace-title">DISCARD</span></span>
-                    <span id="goal" class="playspace"><span class="playspace-title">GOAL</span></span>
+                    <div id="discard" class="playspace">
+                        <div class="playspace-title">DISCARD</div>
+                        <div id="discard-cards"></div>
+                    </div>
+                    <div id="goal" class="playspace">
+                        <div class="playspace-title">GOAL</div>
+                        <div id="goal-cards"></div>
+                    </div>
                 </div>
             </div>
         </div>
         <div id="cards">
         </div>
     </div>
+    <div id="status-bar">
+        <div id="text">Waiting for Milo</div>
+        <div id="balls-container">
+            <div class="balls">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+    <div id="my-keepers">
+        
+    </div>
     <div id="card-modal">
+        <div id="modal-title"></div>
         <div id="modal-card-container"></div>
         <div id="modal-close">&#x2715;</div>
     </div>

@@ -42,6 +42,10 @@ body {
 	transform: translate(0px, -15px);
 }
 
+.card {
+	cursor: pointer;
+}
+
 .card-image {
 	border-radius: 12px;
 	border: 2px solid black;
@@ -64,7 +68,7 @@ body {
 	width: 100%;
 	height: 100%;
 	display: none;
-	background-color: rgba(0, 0, 0, 0.8);
+	background-color: rgba(0, 0, 0, 0.85);
 	overflow-y: auto;
 }
 
@@ -82,6 +86,7 @@ body {
 	display: flex;
 	flex-flow: row wrap;
 	margin: 3em;
+	margin-top: 1em;
 }
 
 #modal-card-container .card {
@@ -99,10 +104,17 @@ body {
 	border: none;
 }
 
+#modal-title {
+	color: white;
+	margin-left: 2em;
+	margin-top: 1em;
+	font-size: 2em;
+	font-family: "Acme", Jost, Sans-Serif;
+}
+
 /* table contents */
 
 #table-middle {
-	max-width: 60%;
 	justify-content: center;
 	align-items: center;
 }
@@ -114,14 +126,17 @@ body {
 	margin: 3px;
 	padding: 4px;
 	border-radius: 2px;
+	display: inline-block;
+}
+
+#rule-cards, #goal-cards, #discard-cards {
+	position: relative;
+	margin-right: 6em;
+	margin-top: 1.5em;
 }
 
 .playspace .card {
-	margin-right: 2px;
-}
-
-.playspace-title {
-
+	position: absolute;
 }
 
 
@@ -156,6 +171,9 @@ body {
 	margin:4vw;	
 	font-size: 30px;
 	font-family: "Acme", Jost, Sans-Serif;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 #table-container {
@@ -164,6 +182,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#players-container {
+	font-family: "Acme", Jost, Sans-Serif;
 }
 
 .user {
@@ -217,4 +239,84 @@ img.cards-img {
 .keepers .card-image {
 	border: 2px solid black;
 	border-radius: 6px;
+}
+
+#status-bar {
+	position: fixed;
+	left: 3px;
+	bottom: 3px;
+	background-color: black;
+	color: white;
+	font-family: "Acme", Jost, Sans-Serif;
+	padding: 6px;
+	padding-left: 12px;
+	padding-right: 20px;
+	/* min-width: 20vw; */
+	border-radius: 3px;
+}
+
+#text {
+	display: inline-block;
+	margin-right: 2em;
+}
+
+#balls-container {
+	display: inline-block;
+}
+
+/* balls loading animation */
+
+.balls {
+	width: 3em;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	justify-content: space-between;
+  }
+  
+  .balls div {
+	width: 0.5em;
+	height: 0.5em;
+	border-radius: 50%;
+	background-color: white;
+  }
+  
+  .balls div:nth-of-type(1) {
+	transform: translateX(-100%);
+	animation: left-swing 0.5s ease-in alternate infinite;
+  }
+  
+  .balls div:nth-of-type(3) {
+	transform: translateX(-95%);
+	animation: right-swing 0.5s ease-out alternate infinite;
+  }
+  
+  @keyframes left-swing {
+	50%,
+	100% {
+	  transform: translateX(95%);
+	}
+  }
+  
+  @keyframes right-swing {
+	50% {
+	  transform: translateX(-95%);
+	}
+	100% {
+	  transform: translateX(100%);
+	}
+  }
+
+/* player's own keepers */
+
+#my-keepers {
+	position: fixed;
+	padding: 1em;
+	padding-right: 5em;
+	right: 0;
+	bottom: 0;
+}
+
+#my-keepers .card {
+	display: inline-block;
 }

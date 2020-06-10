@@ -7,9 +7,15 @@ let gameState = {
 		"5Keepers",
 		"TrashSomething"
 	],
+	"keepers": [
+		"Bread",
+		"Cosmos",
+		"Chocolate"
+	],
 	"gameState": {
-		"rules": [],
-		"goals": [],
+		"rules": ["Draw2", "HandLimit1"],
+		"goals": ["Brain(noTV)"],
+		"discard":["AllThatIsCertain"],
 		"players": [
 			{
 				"name": "Milo",
@@ -86,16 +92,9 @@ function putCards(cardContainer, cardList, width, height) {
 	});
 }
 
-function spreadKeepers(keeperContainer) {
-	let cards = keeperContainer.children;
-	let distance;
-	if (cards.length < 4) {
-		distance = 50 / cards.length;
-	}
-	else {
-		angle = 40 / cards.length;
-		distance = 100 / cards.length;
-	}
+function spreadCards(cardContainer, width) {
+	let cards = cardContainer.children;
+	let distance = width / cards.length;
 	for (let i = 0; i < cards.length; i++) {
 		let normalized = i - Math.floor(cards.length / 2);
 		cards[i].style.transform = `translate(${distance * normalized}px, -20px)`;
@@ -117,24 +116,25 @@ let handContainer = document.querySelector('#cards');
 let modalClose = document.querySelector('#modal-close');
 let cardModal = document.querySelector('#card-modal');
 let modalCardContainer = document.querySelector('#modal-card-container');
+let modalTitleContainer = document.querySelector('#modal-title')
 
 putCards(handContainer, gameState.hand, 100, 150);
 spreadHand(handContainer);
 
-let rules = ["Draw2", "HandLimit1"];
-let goal = [""]
-putCards(document.querySelector('#rules'), rules, 80, 120);
-
 //modal event listening
 handContainer.addEventListener('click', function () {
-	setModal(gameState.hand);
+	setModal(gameState.hand, "Your Hand");
 });
 
 modalClose.addEventListener('click', function () {
 	cardModal.style.display = 'none';
 });
 
-function setModal(cardList) {
+function setModal(cardList, title) {
+	if(cardList.length == 0) {
+		return;
+	}
+	modalTitleContainer.textContent = title
 	modalCardContainer.innerHTML = '';
 	cardModal.style.display = 'block';
 	putCards(modalCardContainer, cardList, 150, 225);
@@ -145,7 +145,8 @@ function setModal(cardList) {
 function putUsers(users) {
 	let IMG_WIDTH = 100;
 	let board = document.querySelector('#table')
-	board.innerHTML = ''
+	let container = document.querySelector('#players-container')
+	container.innerHTML = ''
 	let rect = board.getBoundingClientRect()
 	let left = [];
 	let middle = [];
@@ -184,12 +185,10 @@ function putUsers(users) {
 	const rightKeepersLeft = i => rect.right - IMG_WIDTH * 0.7
 	const rightKeepersTop = i => rect.top + rightInc * (i + 1)
 	placePlayerLine(right, rightUserLeft, rightUserTop, rightKeepersLeft, rightKeepersTop, -90)
-
-	//setKeeperClickEvent()
 }
 
 function placePlayerLine(players, userLeft, userTop, keepersLeft, keepersTop, keeperRotation) {
-	let board = document.querySelector('#table')
+	let container = document.querySelector('#players-container')
 	for (let i = 0; i < players.length; i++) {
 		let elem = createUserElement(players[i].name, players[i].handSize)
 		elem.style.left = `${userLeft(i)}px`
@@ -200,16 +199,15 @@ function placePlayerLine(players, userLeft, userTop, keepersLeft, keepersTop, ke
 		cardElem.style.top = `${keepersTop(i)}px`
 		cardElem.style.transform = `rotate(${keeperRotation}deg)`
 		cardElem.addEventListener('click', function () {
-			setModal(players[i].keepers)
+			setModal(players[i].keepers, `${players[i].name}'s Keepers`)
 		})
 		putCards(cardElem, players[i].keepers, 48, 64)
-		spreadKeepers(cardElem)
+		spreadCards(cardElem, 80)
 
-		board.appendChild(elem)
-		board.appendChild(cardElem)
+		container.appendChild(elem)
+		container.appendChild(cardElem)
 	}
 }
-
 
 function createCardElement() {
 	let result = document.createElement('div')
@@ -244,14 +242,64 @@ function createUserElement(name, cards) {
 
 putUsers(gameState.gameState.players)
 
-// function setKeeperClickEvent() {
-// 	Array.from(document.querySelectorAll('.keepers')).map(keep => {
-// 		keep.addEventListener('click', function () {
-// 			setModal(keepers)
-// 		})
-// 	})
-// }
-
 window.onresize = function () {
 	return putUsers(gameState.gameState.players)
 }
+
+//board updating
+function updateRules(ruleList) {
+	const elem = document.querySelector("#rule-cards")
+	elem.innerHTML = ''
+	putCards(elem, ruleList, 80, 120)
+	spreadCards(elem, 120)
+}
+
+function updateGoals(goalList) {
+	const elem = document.querySelector("#goal-cards")
+	elem.innerHTML = ''
+	putCards(elem, goalList, 80, 120)
+	spreadCards(elem, 80)
+}
+
+function updateDiscard(card) {
+	const elem = document.querySelector("#discard-cards")
+	elem.innerHTML = ''
+	putCards(elem, card, 80, 120)
+	spreadCards(elem, 80)
+}
+
+function addBoardEventListeners() {
+	const ruleElem = document.querySelector("#rule-cards")
+	const goalElem = document.querySelector("#goal-cards")
+	const discardElem = document.querySelector("#discard-cards")
+
+	ruleElem.addEventListener('click', function () {
+		setModal(gameState.gameState.rules, "Rules")
+	})
+
+	goalElem.addEventListener('click', function () {
+		setModal(gameState.gameState.goals, "Goals")
+	})
+
+	discardElem.addEventListener('click', function () {
+		setModal(gameState.gameState.discard, "Discard")
+	})
+}
+
+function putOwnKeepers(keepers) {
+	const elem = document.querySelector('#my-keepers')
+	elem.addEventListener('click', function () {
+		setModal(gameState.keepers, "Your Keepers")
+	})
+	putCards(elem, keepers, 80, 120)
+}
+
+putOwnKeepers(gameState.keepers)
+
+updateRules(gameState.gameState.rules)
+updateGoals(gameState.gameState.goals)
+updateDiscard(gameState.gameState.discard)
+addBoardEventListeners()
+
+
+
