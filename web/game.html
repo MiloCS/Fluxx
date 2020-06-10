@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="game.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jost">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Acme">
-    <link rel="icon" href="Cards.png">
+    <link rel="icon" href="logo.png">
     <script defer type="text/javascript" src="view.js"></script>
 </head>
 
@@ -14,14 +14,18 @@
     <div id="container">
         <div id=title>
             FluxxOnline
-            <img id="logo" src="Cards.png" width="40" height="40">
+            <img id="logo" src="logo.png" width="40" height="40">
         </div>
-        <div id="table">
-            <div id="table-middle">
-                <div id="rules">RULES</div>
-                <span id="draw-pile">DRAW</span>
-                <span id="discard">DISCARD</span>
-                <span id="goal">GOAL</span>
+        <div id="table-container">
+            <div id="table">
+                <div id="table-middle">
+                    <div id="rules" class="playspace">
+                        <div class="playspace-title">RULES</div>
+                    </div>
+                    <span id="draw-pile" class="playspace"><span class="playspace-title">DRAW</span></span>
+                    <span id="discard" class="playspace"><span class="playspace-title">DISCARD</span></span>
+                    <span id="goal" class="playspace"><span class="playspace-title">GOAL</span></span>
+                </div>
             </div>
         </div>
         <div id="cards">

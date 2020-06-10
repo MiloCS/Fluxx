@@ -1,7 +1,3 @@
-* {
-	box-sizing: border-box;
-}
-
 html {
 	margin: 0;
     background-color: #f5f5f5;
@@ -32,19 +28,6 @@ body {
 	perspective: 500px;
 }
 
-#table {
-	width: 90vw;
-	height: 70vh;
-	/*background-image: url("woodtexture.jpg");*/
-	background-color: #f7efda;
-	border-radius: 10px;
-	border: 2px solid #70342e;
-	margin:4vw;
-	text-align: center;
-	font-size: 30px;
-	font-family: "Acme", Jost, Sans-Serif;
-}
-
 #cards {
 	cursor: pointer;
 	display: flex;
@@ -59,17 +42,19 @@ body {
 	transform: translate(0px, -15px);
 }
 
-.card {
-	font-size: 0;
-	display: inline;
+.card-image {
 	border-radius: 12px;
 	border: 2px solid black;
-	vertical-align: top;
 }
 
 #cards .card {
 	position: absolute;
+	font-size: 0;
+	display: inline;
+	vertical-align: top;
 }
+
+/* modal contents */
 
 #card-modal {
 	overflow: auto;
@@ -80,6 +65,7 @@ body {
 	height: 100%;
 	display: none;
 	background-color: rgba(0, 0, 0, 0.8);
+	overflow-y: auto;
 }
 
 #modal-close {
@@ -93,37 +79,54 @@ body {
 }
 
 #modal-card-container {
-	left: auto;
-	top: auto;
-	padding: 3em;
-	overflow: auto;
-	display: grid;
-	grid-template-columns: repeat(5, auto);
-	grid-gap: 1em;
+	display: flex;
+	flex-flow: row wrap;
+	margin: 3em;
 }
 
 #modal-card-container .card {
+	margin: 1em;
+	margin-top: 0;
+	transform: scale(1);
+    transition: transform 0.2s ease-in-out;
+}
+
+#modal-card-container .card:hover {
+    transform: scale(1.06);
+}
+
+#modal-card-container .card-image {
 	border: none;
 }
 
+/* table contents */
+
 #table-middle {
-	width: 60%;
+	max-width: 60%;
 	justify-content: center;
 	align-items: center;
 }
 
-#rules, #draw-pile, #discard, #goal {
+.playspace {
 	font-size: 0.5em;
 	color: #9e9e9e;
-	background-color: lightgrey;
+	/*background-color: lightgrey;*/
 	margin: 3px;
-	padding: 2px;
+	padding: 4px;
 	border-radius: 2px;
+}
+
+.playspace .card {
+	margin-right: 2px;
+}
+
+.playspace-title {
+
 }
 
 
 /*flipping styling, may use later*/
-.card-back {
+/* .card-back {
 	transform: rotateY(180deg);
 }
 
@@ -137,4 +140,81 @@ body {
 
 .card.covered .card-front {
 	transform: rotateY(-180deg);
+} */
+
+
+/* player orientation */
+
+
+#table {
+	width: 80vw;
+	height: 55vh;
+	/*background-image: url("woodtexture.jpg");*/
+	background-color: #f7efda;
+	border-radius: 10px;
+	border: 2px solid #70342e;
+	margin:4vw;	
+	font-size: 30px;
+	font-family: "Acme", Jost, Sans-Serif;
+}
+
+#table-container {
+    min-width: 100vw;
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user {
+    position: fixed;
+    top: 160px;
+    left: 258.75px;
+	padding: 20px;
+	font-size: 1rem;
+}
+
+.topline {
+    display: block;
+    position: relative;
+}
+
+img.profile-img {
+    width: 60px;
+    height: 60px;
+}
+
+img.cards-img {
+    width: 26px;
+    height: 26px;
+}
+
+.name {
+    text-align: center
+}
+
+.card-num {
+    font-size: 0.9em;
+    display: inline-block;
+    transform: translate(-15px, -9px) rotate(10deg);
+}
+
+/* keepers on the table */
+
+.keepers {
+	position: fixed;
+	height: 50px;
+	width: 50px;
+}
+
+.keepers .card {
+	position: absolute;
+	font-size: 0;
+	display: inline;
+	vertical-align: top;
+}
+
+.keepers .card-image {
+	border: 2px solid black;
+	border-radius: 6px;
 }
