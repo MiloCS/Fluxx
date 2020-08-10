@@ -85,5 +85,4 @@ let f3_0 =
 	new C.TwoKeep("War = Death", [4, 17]),
 	new C.TwoKeep("Winning the Lottery", [5, 8])];
 
-
 export *;
