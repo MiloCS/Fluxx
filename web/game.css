@@ -97,7 +97,7 @@ body {
 }
 
 #modal-card-container .card:hover {
-    transform: scale(1.06);
+    transform: scale(1.03);
 }
 
 #modal-card-container .card-image {
@@ -115,6 +115,7 @@ body {
 /* table contents */
 
 #table-middle {
+	display: flex;
 	justify-content: center;
 	align-items: center;
 }
@@ -163,7 +164,7 @@ body {
 
 #table {
 	width: 80vw;
-	height: 55vh;
+	height: 65vh;
 	/*background-image: url("woodtexture.jpg");*/
 	background-color: #f7efda;
 	border-radius: 10px;

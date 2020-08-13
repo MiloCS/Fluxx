@@ -56,6 +56,10 @@ function sendPlayerList(roomCode, list) {
 	io.to(roomCode).emit('playerList', list);
 }
 
+function update() {
+	
+}
+
 let options = {
 
 }

@@ -59,6 +59,31 @@ let gameState = {
 	},
 	"updates": ["rules", "goals"]
 }
+//important game variable definitions
+let handContainer = document.querySelector('#cards');
+let modalClose = document.querySelector('#modal-close');
+let cardModal = document.querySelector('#card-modal');
+let modalCardContainer = document.querySelector('#modal-card-container');
+let modalTitleContainer = document.querySelector('#modal-title');
+let playersContainer = document.querySelector('#players-container')
+
+let modalOpen = false;
+let focusedCard = -1;
+
+function changeHandNum(playerIndex, newNum) {
+	let player = playersContainer.children[playerIndex];
+	let numElem = player.getElementsByClassName('card-num')[0];
+	numElem.innerText = newNum;
+}
+
+function drawCard(playerIndex, newNum) {
+	drawCardAnimate(playerIndex);
+	changeHandNum(newNum);
+}
+
+function drawCardAnimate(playerIndex) {
+	playersContainer.children[playerIndex]
+} 
 
 function spreadHand(cardContainer) {
 	let cards = cardContainer.children;
@@ -78,7 +103,7 @@ function spreadHand(cardContainer) {
 	}
 }
 
-function putCards(cardContainer, cardList, width, height) {
+function putCards(cardContainer, cardList, width, height, modal=false) {
 	cardList.forEach(cardName => {
 		let card = document.createElement('div');
 		card.classList.add('card');
@@ -90,7 +115,63 @@ function putCards(cardContainer, cardList, width, height) {
 		card.appendChild(img);
 		cardContainer.appendChild(card);
 	});
+	//if we're adding cards to the modal, add the click event listeners so user can select cards
+	if (modal) {
+		Array.from(modalCardContainer.children).forEach(card => {
+			card.addEventListener('click', function(e) {
+				if (focusedCard !== -1) {
+					modalCardContainer.children[focusedCard].style = '';
+				}
+				focusedCard = Array.from(modalCardContainer.children).indexOf(e.target.parentNode);
+				modalCardContainer.children[focusedCard].style = 'transform: scale(1.06)';
+			})
+		})
+	}
 }
+
+function closeModal() {
+	cardModal.style.display = 'none';
+	modalOpen = false;
+	focusedCard = -1;
+}
+
+//event listeners for using keys to select cards
+//this also includes other modal key bindings: esc to leave modal, enter to play card
+document.addEventListener('keydown', function(e) {
+	e = e || window.event;
+	if (e.keyCode === 32) {
+		changeHandNum(0, 0);
+	}
+	let cards = modalCardContainer.children.length;
+	if (modalOpen) {
+		if (e.keyCode === 27) {
+			closeModal();
+		}
+		if (e.keyCode === 13) {
+			console.log("enter pressed");
+		}
+		if (e.keyCode === 37) {
+			modalCardContainer.children[focusedCard].style = '';
+			if (focusedCard !== -1) {
+				focusedCard = (focusedCard + cards - 1) % cards;
+			}
+			modalCardContainer.children[focusedCard].style = 'transform: scale(1.06)';
+			console.log(focusedCard);
+		}
+		if (e.keyCode === 39) {
+			if (focusedCard !== -1) {
+				modalCardContainer.children[focusedCard].style = '';
+				focusedCard = (focusedCard + 1) % cards;
+			}
+			else {
+				focusedCard = 0;
+				//modalCardContainer.children[focusedCard].style = '';
+			}
+			modalCardContainer.children[focusedCard].style = 'transform: scale(1.06)';
+			console.log(focusedCard);
+		}
+	}
+});
 
 function spreadCards(cardContainer, width) {
 	let cards = cardContainer.children;
@@ -112,23 +193,15 @@ function selectRandomCards(array) {
 	return final;
 }
 
-let handContainer = document.querySelector('#cards');
-let modalClose = document.querySelector('#modal-close');
-let cardModal = document.querySelector('#card-modal');
-let modalCardContainer = document.querySelector('#modal-card-container');
-let modalTitleContainer = document.querySelector('#modal-title')
-
 putCards(handContainer, gameState.hand, 100, 150);
 spreadHand(handContainer);
 
-//modal event listening
+//basic modal opening and closing event listening
 handContainer.addEventListener('click', function () {
 	setModal(gameState.hand, "Your Hand");
 });
 
-modalClose.addEventListener('click', function () {
-	cardModal.style.display = 'none';
-});
+modalClose.addEventListener('click', closeModal);
 
 function setModal(cardList, title) {
 	if(cardList.length == 0) {
@@ -137,7 +210,8 @@ function setModal(cardList, title) {
 	modalTitleContainer.textContent = title
 	modalCardContainer.innerHTML = '';
 	cardModal.style.display = 'block';
-	putCards(modalCardContainer, cardList, 150, 225);
+	modalOpen = true;
+	putCards(modalCardContainer, cardList, 150, 225, true);
 }
 
 //other player view creation
@@ -299,7 +373,7 @@ putOwnKeepers(gameState.keepers)
 updateRules(gameState.gameState.rules)
 updateGoals(gameState.gameState.goals)
 updateDiscard(gameState.gameState.discard)
-addBoardEventListeners()
+addBoardEventListeners();
 
 
 
