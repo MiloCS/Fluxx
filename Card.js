@@ -50,16 +50,6 @@ class LimRule extends NRule {
 	}
 }
 
-class LimRule extends NRule {
-	constructor(name, lim) {
-		super(name);
-		this.lim = lim;
-	}
-	onPlay(player, game) {
-		super.onPlay(player, game);
-		// stuff specific to limits, maybe just in KLim and HLim?
-	}
-}
 
 class HLimRule extends LimRule {
 	onPlay(player, game) {
@@ -100,6 +90,7 @@ class Keeper extends Card {
 }
 
 class Goal extends Card {
+	// wincon: depends on type of goal, defined in subclass
 	constructor(name, wcon) {
 		super(name);
 		this.wcon = wcon;
@@ -137,4 +128,4 @@ class SpecialGoal extends Goal {
 	}
 }
 
-export * from 'Card.js';
+export *;

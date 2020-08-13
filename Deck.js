@@ -1,6 +1,6 @@
-C = require('./Card');
 CL = require('./CardLists')
 
+// Parent class only
 class Deck {
 	contructor() {
 		this.pile = [];
@@ -13,7 +13,7 @@ class Deck {
     		[array[i], array[j]] = [array[j], array[i]];
     	}
 	}
-	// return an array of the top n cards from the deck
+	// return an array of the top n Card objects from the deck
 	deal(n) {
 		let dealt = [];
 		for (var i = n; i > 0; i--) {
@@ -28,7 +28,7 @@ class Deck {
 	}
 }
 
-class F3_0Deck extends Deck {
+export class F3_0Deck extends Deck {
 	constructor() {
 		super();
 		this.pile = CL.f3_0;
