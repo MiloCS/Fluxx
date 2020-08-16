@@ -5,7 +5,10 @@ class Player {
 		this.hand = [];
 		this.keepers = [];
 	}
-	discard() {
+	// discard a card
+	// cardlist = "h" for hand
+	// cardlist = "k" for keeper
+	discard(cardlist) {
 
 	}
 }

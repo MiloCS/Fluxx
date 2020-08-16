@@ -2,7 +2,7 @@ class Card {
 	constructor(name) {
 		this.name = name;
 	}
-	onPlay(player, game) {
+	onPlay(player, gamestate) {
 		console.log("Played " + this.name);
 	}
 	toString() {
@@ -11,7 +11,7 @@ class Card {
 }
 
 class NRule extends Card {
-	onPlay(player, game) {
+	onPlay(player, gamestate) {
 		super.onPlay(player, game);
 		// some stuff here with RULES
 	}
@@ -22,7 +22,7 @@ class DrawRule extends NRule {
 		super(name);
 		this.d = draws;
 	}
-	onPlay(player, game) {
+	onPlay(player, gamestate) {
 		super.onPlay(player, game);
 		// stuff specific to Draw rules
 	}
@@ -33,7 +33,7 @@ class PlayRule extends NRule {
 		super(name);
 		this.p = plays;
 	}
-	onPlay(player, game) {
+	onPlay(player, gamestate) {
 		super.onPlay(player, game);
 		// stuff specific to Play rules
 	}
@@ -44,7 +44,7 @@ class LimRule extends NRule {
 		super(name);
 		this.lim = lim;
 	}
-	onPlay(player, game) {
+	onPlay(player, gamestate) {
 		super.onPlay(player, game);
 		// stuff specific to limits, maybe just in KLim and HLim?
 	}
@@ -52,14 +52,14 @@ class LimRule extends NRule {
 
 
 class HLimRule extends LimRule {
-	onPlay(player, game) {
+	onPlay(player, gamestate) {
 		super.onPlay(player, game);
 		// stuff specific to hand limits
 	}
 }
 
 class KLimRule extends LimRule {
-	onPlay(player, game) {
+	onPlay(player, gamestate) {
 		super.onPlay(player, game);
 		// stuff specific to keeper limits
 	}
@@ -70,7 +70,7 @@ class Action extends Card {
 		super(name);
 		this.a = action;
 	}
-	onPlay(player, game) {
+	onPlay(player, gamestate) {
 		super.onPlay(player, game);
 		// stuff specific for Action cards
 	}
@@ -83,7 +83,7 @@ class Keeper extends Card {
 		super(name);
 		this.kid = id
 	}
-	onPlay(player, game) {
+	onPlay(player, gamestate) {
 		super.onPlay(player, game);
 		// add keeper to players
 	}
@@ -95,7 +95,7 @@ class Goal extends Card {
 		super(name);
 		this.wcon = wcon;
 	}
-	onPlay(player, game) {
+	onPlay(player, gamestate) {
 		super.onPlay(player, game);
 		// put goal in play
 	}
