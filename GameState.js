@@ -1,20 +1,22 @@
 D = require('./Deck');
+INDEX = require('./index.js')
+//require players?
 
 
 class GameState {
 	// all the things happen in this class, GameData is manipulated by the GameState
 	constructor(gametype, players) {
-		this.gd = new GameData(gametype);
-		let array = players;
-		for (let i = array.length - 1; i > 0; i--) {
-    		let j = Math.floor(Math.random() * (i + 1));
-    		[array[i], array[j]] = [array[j], array[i]];
-    	}
-		this.players = array;
-		//each player in the list of Players gets a ref to this.gd
-		for (int i = 0; i < this.players.length; i++) {
-			this.players[i].gamedata = this.gd;
-		}
+		this.gd = new GameData(gametype, players);
+		// let array = players;
+		// for (let i = array.length - 1; i > 0; i--) {
+    	// 	let j = Math.floor(Math.random() * (i + 1));
+    	// 	[array[i], array[j]] = [array[j], array[i]];
+    	// }
+		// this.players = array;
+		// //each player in the list of Players gets a ref to this.gd
+		// for (let i = 0; i < this.players.length; i++) {
+		// 	this.players[i].gamedata = this.gd;
+		// }
 	}
 
 	// Game setup: shuffle and deal
@@ -24,7 +26,7 @@ class GameState {
 			let cards = this.gd.deck.deal(3);
 			this.players[i - 1].hand = cards;
 		}
-		// send UPDATE
+		this.update();
 	}
 
 	// Start a turn for a given player
@@ -35,7 +37,7 @@ class GameState {
 		for (let i = 0; i < drawn; i++) {
 			player.hand.push(drawnCards[i]);
 		}
-		// send UPDATE
+		this.update();
 		this.gd.drawnThisTurn = drawn;
 		this.gd.playedThisTurn = 0;
 		this.run_play(player);
@@ -43,7 +45,7 @@ class GameState {
 
 	// Run a play for a given player
 	run_play(player) {
-		this.gd.activePlayer = player;
+		// this.gd.activePlayer = player;
 		// check that all players (except for active player) follow limits
 		this.comply_all_limits(false);
 		// draw up to correct amount
@@ -51,11 +53,11 @@ class GameState {
 		if (toDraw < 0) {
 			let drawnCards = this.gd.deck.draw(toDraw);
 			player.hand = player.hand.concat(drawnCards);
-			// send UPDATE
+			this.update();
 		}
 		// wait for play - MILO can we run a function somewhere that will return once a player plays a card?
 
-		// send UPDATE
+		// send UPDATE (maybe inside function?)
 		// check for winner
 		this.check_all_winner();
 		if (this.gd.winners != []) {
@@ -76,7 +78,7 @@ class GameState {
 	end_turn(player) {
 		// make all players comply with limits
 		this.comply_all_limits(true);
-		// send UPDATE
+		this.update();
 		// determine next player and start turn with next player
 		let nextPlayer;
 		let pindex = this.players.findIndex((p) => p == this.gd.activePlayer);
@@ -119,18 +121,36 @@ class GameState {
 		}
 	}
 
+	// Update: Send to each player their appropriate pgs
+	update() {
+		this.updateMGS();
+		this.gd.players.forEach(p => {
+			let pgs = this.gd.generatePlayerGameState(p);
+			INDEX.update(pgs, p.pID);
+		});
+	}
+
+	// Pull in player data into player portion of MGS
+	updateMGS() {
+		this.gd.mgs.discard = this.gd.deck.discard;
+		this.gd.players.forEach(p => {
+			pJSON = this.gd.mgs.players.find(p => p.pID == player.pID);
+			pJSON.hand = p.hand;
+			pJSON.keepers = p.keepers;
+		});
+	}
+
 }
 
 
 class GameData {
-	constructor(gametype) {
+	constructor(gametype, players) {
 		if (gametype == "fluxx3_0") {
 			this.deck = D.F3_0Deck(); // a Deck object
 		}
 		else {
 			this.deck = null;
 		}
-		this.goals = []; // a list of Goal object(s)
 		this.draws = 1; // int
 		this.plays = 1; // int
 		this.hlim = null; // int
@@ -138,13 +158,31 @@ class GameData {
 		this.activePlayer = null; // int: the index in gs.players
 		this.winners = [];
 
+		// Players
+		let array = players;
+		for (let i = array.length - 1; i > 0; i--) {
+    		let j = Math.floor(Math.random() * (i + 1));
+    		[array[i], array[j]] = [array[j], array[i]];
+    	}
+		this.players = array;
+
 		// Special case rules
 		this.reverseOrder = false;
 
 		// Variables for turn-by-turn data
 		this.playedThisTurn = 0;
 		this.drawnThisTurn = 0;
+
+		// Master Game State
+		this.mgs = 
+			{
+				"rules": [],
+				"goals": [],
+				"discard": [],
+				"players": [] // id, name, hand[], keepers[]
+			};
 	}
+
 
 	// make the given player comply with limits if not the active player
 	comply_player_limits(player) {
@@ -170,6 +208,32 @@ class GameData {
 			}
 		}
 		return false;
+	}
+
+	// Generate the player game state for the given player
+	generatePlayerGameState(player) {
+		let pgs = {};
+		pgs.gameState = Object.assign({}, this.mgs);
+		delete pgs.gameState.players;
+		//find the current player in this.mgs, populate pgs. player, hand, keepers
+		let thisPJSON = this.mgs.players.find(p => p.pID == player.pID);
+		pgs.player = thisPJSON.pID;
+		pgs.hand = thisPJSON.hand;
+		pgs.keepers = thisPJSON.keepers;
+		delete thisPJSON
+		//sort through players with a map (need accesory function)
+		pgs.gameState.players = 
+			pgs.gameState.players
+			.filter(p => p.pID != player.pID)
+			.map(e => this.sortOtherPlayerData(e));
+	}
+
+	// Accessory function to get the hand length and keepers of other players
+	sortOtherPlayerData(pJSON) {
+		nPJSON = Object.assign({}, pJSON);
+		nPJSON.handSize = nPJSON.hand.length;
+		delete nPJSON.hand;
+		return nPJSON;
 	}
 }
 

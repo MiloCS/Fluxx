@@ -8,12 +8,16 @@ class Card {
 	toString() {
 		return this.name;
 	}
+	toMinimal() {
+		return (this.name, typeof this);
+	}
 }
 
 class NRule extends Card {
 	onPlay(player, gamestate) {
 		super.onPlay(player, game);
 		// some stuff here with RULES
+		//TODO // then comply with limits!!!!!!!1
 	}
 }
 
