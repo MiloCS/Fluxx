@@ -1,5 +1,5 @@
 D = require('./Deck');
-INDEX = require('./index.js')
+INDEX = require('./index')
 //require players?
 
 
@@ -56,7 +56,7 @@ class GameState {
 			this.update();
 		}
 		// wait for play - MILO can we run a function somewhere that will return once a player plays a card?
-
+		player.play(this.gd);
 		// send UPDATE (maybe inside function?)
 		// check for winner
 		this.check_all_winner();
