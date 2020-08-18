@@ -2,18 +2,22 @@ class Card {
 	constructor(name) {
 		this.name = name;
 	}
-	onPlay(player, game) {
+	onPlay(player, gamedata) {
 		console.log("Played " + this.name);
 	}
 	toString() {
 		return this.name;
 	}
+	toMinimal() {
+		return (this.name, typeof this);
+	}
 }
 
 class NRule extends Card {
-	onPlay(player, game) {
-		super.onPlay(player, game);
+	onPlay(player, gamedata) {
+		super.onPlay(player, gamedata);
 		// some stuff here with RULES
+		//TODO // then comply with limits!!!!!!!1
 	}
 }
 
@@ -22,8 +26,8 @@ class DrawRule extends NRule {
 		super(name);
 		this.d = draws;
 	}
-	onPlay(player, game) {
-		super.onPlay(player, game);
+	onPlay(player, gamedata) {
+		super.onPlay(player, gamedata);
 		// stuff specific to Draw rules
 	}
 }
@@ -33,8 +37,8 @@ class PlayRule extends NRule {
 		super(name);
 		this.p = plays;
 	}
-	onPlay(player, game) {
-		super.onPlay(player, game);
+	onPlay(player, gamedata) {
+		super.onPlay(player, gamedata);
 		// stuff specific to Play rules
 	}
 }
@@ -44,23 +48,23 @@ class LimRule extends NRule {
 		super(name);
 		this.lim = lim;
 	}
-	onPlay(player, game) {
-		super.onPlay(player, game);
+	onPlay(player, gamedata) {
+		super.onPlay(player, gamedata);
 		// stuff specific to limits, maybe just in KLim and HLim?
 	}
 }
 
 
 class HLimRule extends LimRule {
-	onPlay(player, game) {
-		super.onPlay(player, game);
+	onPlay(player, gamedata) {
+		super.onPlay(player, gamedata);
 		// stuff specific to hand limits
 	}
 }
 
 class KLimRule extends LimRule {
-	onPlay(player, game) {
-		super.onPlay(player, game);
+	onPlay(player, gamedata) {
+		super.onPlay(player, gamedata);
 		// stuff specific to keeper limits
 	}
 }
@@ -70,8 +74,8 @@ class Action extends Card {
 		super(name);
 		this.a = action;
 	}
-	onPlay(player, game) {
-		super.onPlay(player, game);
+	onPlay(player, gamedata) {
+		super.onPlay(player, gamedata);
 		// stuff specific for Action cards
 	}
 }
@@ -83,8 +87,8 @@ class Keeper extends Card {
 		super(name);
 		this.kid = id
 	}
-	onPlay(player, game) {
-		super.onPlay(player, game);
+	onPlay(player, gamedata) {
+		super.onPlay(player, gamedata);
 		// add keeper to players
 	}
 }
@@ -95,8 +99,8 @@ class Goal extends Card {
 		super(name);
 		this.wcon = wcon;
 	}
-	onPlay(player, game) {
-		super.onPlay(player, game);
+	onPlay(player, gamedata) {
+		super.onPlay(player, gamedata);
 		// put goal in play
 	}
 	isMet() {
@@ -128,4 +132,4 @@ class SpecialGoal extends Goal {
 	}
 }
 
-export *;
+export * from 'Card.js';
