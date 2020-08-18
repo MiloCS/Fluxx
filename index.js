@@ -10,19 +10,28 @@ app.get('/game', function(req, res) {
 
 app.use(express.static(__dirname + '/web/'));
 
+//maps id to human-readable name
 let players = new Map();
 
-io.on('connection', function(socket) {
+//lobby functionality
+let lobby = io.of('/lobby')
+
+function getLobbyRooms() {
+	let lobbySockets = lobby.sockets
+	return lobbySockets[Object.keys(lobbySockets)[0]].adapter.rooms;
+}
+
+lobby.on('connection', function(socket) {
 	socket.on('disconnecting', function(data) {
 		Object.keys(socket.rooms).forEach(function(x) {
-			sendPlayerList(x, Object.keys(io.sockets.adapter.rooms[x].sockets).filter(x=>(x!=socket.id)).map(x => players.get(x)));
+			sendPlayerList(x, Object.keys(getLobbyRooms()[x].sockets).filter(x=>(x!=socket.id)).map(x => players.get(x)));
 		});
 	});
 	socket.on('gamestart', function(code) {
-			io.to(code).emit('gamestart');
+			lobby.to(code).emit('gamestart');
 	});
 	socket.on('createRoom', function(roomCode, name) {
-		if (Object.keys(io.sockets.adapter.rooms).includes(roomCode)) {
+		if (Object.keys(getLobbyRooms()).includes(roomCode)) {
 			socket.emit('roomCreationFailed', roomCode);
 		}
 		else {
@@ -36,7 +45,7 @@ io.on('connection', function(socket) {
 
 	socket.on('joinRoom', function(roomCode, name) {
 
-		if (!Object.keys(io.sockets.adapter.rooms).includes(roomCode)) {
+		if (!Object.keys(getLobbyRooms()).includes(roomCode)) {
 			socket.emit('roomJoinFailed', roomCode);
 		}
 		else {
@@ -49,17 +58,41 @@ io.on('connection', function(socket) {
 });
 
 function updatePlayerList(roomCode) {
-	sendPlayerList(roomCode, Object.keys(io.sockets.adapter.rooms[roomCode].sockets).map(x => players.get(x)));
+	sendPlayerList(roomCode, Object.keys(getLobbyRooms()[roomCode].sockets).map(x => players.get(x)));
 }
 
 function sendPlayerList(roomCode, list) {
-	io.to(roomCode).emit('playerList', list);
+	lobby.to(roomCode).emit('playerList', list);
 }
 
-function update() {
-	
+//main game room namespace and server function
+let gameNs = io.of('/game');
+
+gameNs.on('connection', function(socket){
+	socket.on('update', function(data) {
+		let temp = data;
+		//temp.hand.push('Draw2')
+		//send temp/data to master gamestate??
+		//update master gamestate to reflect most recent client side changes
+		update(temp, socket.id);
+	})
+	//more specific events that happen for playCard, discard, etc
+	socket.on('playcard', function(cardName, playerID) {
+		//pass player id to gamestate??
+		//resolve played function in gamestate that's waiting
+		gameState.play()
+	}) 
+	socket.on('discard', function(cardName, playerID) {
+		//similar to above
+	})
+})
+
+function update(data, id) {
+	gameNs.to(id).emit('update', data);
 }
 
+
+//main server function
 let options = {
 
 }

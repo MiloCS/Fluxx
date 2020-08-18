@@ -1,5 +1,5 @@
 let gameState = {
-	"player":"id",
+	"player": "id",
 	"hand": [
 		"Cookies",
 		"Milk",
@@ -13,9 +13,9 @@ let gameState = {
 		"Chocolate"
 	],
 	"gameState": {
-		"rules": ["Draw2", "HandLimit1"],
+		"rules": ["Draw2", "HandLimit1", "Draw2", "Draw2"],
 		"goals": ["Brain(noTV)"],
-		"discard":["AllThatIsCertain"],
+		"discard": ["AllThatIsCertain"],
 		"players": [
 			{
 				"name": "Milo",
@@ -54,8 +54,8 @@ let gameState = {
 				]
 			},
 		],
-		"status":"waiting for milo",
-		"message":"milo played cookies"
+		"status": "waiting for milo",
+		"message": "milo played cookies"
 	},
 	"updates": ["rules", "goals"]
 }
@@ -65,10 +65,22 @@ let modalClose = document.querySelector('#modal-close');
 let cardModal = document.querySelector('#card-modal');
 let modalCardContainer = document.querySelector('#modal-card-container');
 let modalTitleContainer = document.querySelector('#modal-title');
-let playersContainer = document.querySelector('#players-container')
+let playersContainer = document.querySelector('#players-container');
+let playStatus = document.querySelector('#playstatus');
+let rulesContainer = document.querySelector('#rules')
+
+rulesContainer.onmouseenter = function() {
+	console.log('mouse over rules')
+	rulesContainer.style.transform = 'scale(1.06)'
+}
+
+rulesContainer.onmouseleave = function() {
+	rulesContainer.style.transform = 'scale(1)'
+}
 
 let modalOpen = false;
 let focusedCard = -1;
+let userTurn = false;
 
 function changeHandNum(playerIndex, newNum) {
 	let player = playersContainer.children[playerIndex];
@@ -78,24 +90,43 @@ function changeHandNum(playerIndex, newNum) {
 
 function drawCard(playerIndex, newNum) {
 	drawCardAnimate(playerIndex);
-	changeHandNum(newNum);
+	changeHandNum(playerIndex, newNum);
 }
 
 function drawCardAnimate(playerIndex) {
-	playersContainer.children[playerIndex]
-} 
 
-function spreadHand(cardContainer) {
+	console.log('animating');
+	let animation = [
+		{ opacity: '100%' },
+		{ opacity: '50%' },
+		{ opacity: '0%' }
+	]
+	let elem = playersContainer.children[playerIndex].getElementsByClassName('plus-one')[0]
+
+	elem.animate(animation, {
+		duration: 1000,
+		iterations: 1
+	})
+}
+
+let expanded = false;
+
+function spreadHand(cardContainer, expanded=false) {
 	let cards = cardContainer.children;
 	let angle;
 	let distance;
+	let smallDist = expanded ? 200 : 150;
+	let largeDist = expanded ? 300 : 200;
+	let smallAngle = expanded ? 10 : 20;
+	let largeAngle = expanded ? 25 : 40;
+
 	if (cards.length < 4) {
-		angle = 20 / cards.length;
-		distance = 150 / cards.length;
+		angle = smallAngle / cards.length;
+		distance = smallDist / cards.length;
 	}
 	else {
-		angle = 40 / cards.length;
-		distance = 200 / cards.length;
+		angle = largeAngle / cards.length;
+		distance = largeDist / cards.length;
 	}
 	for (let i = 0; i < cards.length; i++) {
 		let normalized = i - Math.floor(cards.length / 2);
@@ -103,7 +134,7 @@ function spreadHand(cardContainer) {
 	}
 }
 
-function putCards(cardContainer, cardList, width, height, modal=false) {
+function putCards(cardContainer, cardList, width, height, modal = false) {
 	cardList.forEach(cardName => {
 		let card = document.createElement('div');
 		card.classList.add('card');
@@ -118,7 +149,7 @@ function putCards(cardContainer, cardList, width, height, modal=false) {
 	//if we're adding cards to the modal, add the click event listeners so user can select cards
 	if (modal) {
 		Array.from(modalCardContainer.children).forEach(card => {
-			card.addEventListener('click', function(e) {
+			card.addEventListener('click', function (e) {
 				if (focusedCard !== -1) {
 					modalCardContainer.children[focusedCard].style = '';
 				}
@@ -129,18 +160,42 @@ function putCards(cardContainer, cardList, width, height, modal=false) {
 	}
 }
 
+//cleanup when modal is closed: don't display it, set a variable indicating it's closed and unfocus modal cards
 function closeModal() {
 	cardModal.style.display = 'none';
 	modalOpen = false;
 	focusedCard = -1;
 }
 
+//function to start player turn
+function startTurn() {
+	playStatus.style.display = 'block';
+	playStatus.textContent = "It's your turn. Play a card";
+	userTurn = true;
+	spreadHand(handContainer, true);
+}
+
+//function to end turn
+function endTurn() {
+	playStatus.style.display = 'none';
+	userTurn = false;
+	spreadHand(handContainer);
+}
+
 //event listeners for using keys to select cards
-//this also includes other modal key bindings: esc to leave modal, enter to play card
-document.addEventListener('keydown', function(e) {
+//this also includes other modal key bindings: esc to leave modal, enter to play card, arrow keys to move between cards
+document.addEventListener('keydown', function (e) {
 	e = e || window.event;
 	if (e.keyCode === 32) {
-		changeHandNum(0, 0);
+		console.log('space')
+		//drawCard(3, 8);
+		//sendUpdate();
+		if (userTurn) {
+			endTurn();
+		}
+		else {
+			startTurn();
+		}
 	}
 	let cards = modalCardContainer.children.length;
 	if (modalOpen) {
@@ -156,7 +211,6 @@ document.addEventListener('keydown', function(e) {
 				focusedCard = (focusedCard + cards - 1) % cards;
 			}
 			modalCardContainer.children[focusedCard].style = 'transform: scale(1.06)';
-			console.log(focusedCard);
 		}
 		if (e.keyCode === 39) {
 			if (focusedCard !== -1) {
@@ -165,20 +219,28 @@ document.addEventListener('keydown', function(e) {
 			}
 			else {
 				focusedCard = 0;
-				//modalCardContainer.children[focusedCard].style = '';
 			}
 			modalCardContainer.children[focusedCard].style = 'transform: scale(1.06)';
-			console.log(focusedCard);
 		}
 	}
 });
 
+//spreads cards in a container out over a set width
 function spreadCards(cardContainer, width) {
 	let cards = cardContainer.children;
 	let distance = width / cards.length;
 	for (let i = 0; i < cards.length; i++) {
 		let normalized = i - Math.floor(cards.length / 2);
 		cards[i].style.transform = `translate(${distance * normalized}px, -20px)`;
+	}
+}
+
+//spread rules: spreads to the right, basically left-aligning the spread
+function spreadOnTable(cardContainer, width) {
+	let cards = cardContainer.children;
+	let distance = width / cards.length;
+	for (let i = 0; i < cards.length; i++) {
+		cards[i].style.transform = `translate(${distance * i}px, 0px)`;
 	}
 }
 
@@ -193,18 +255,22 @@ function selectRandomCards(array) {
 	return final;
 }
 
-putCards(handContainer, gameState.hand, 100, 150);
-spreadHand(handContainer);
-
 //basic modal opening and closing event listening
-handContainer.addEventListener('click', function () {
+// handContainer.addEventListener('click', function () {
+// 	setModal(gameState.hand, "Your Hand");
+// });
+
+//this is an event listened for using right click instead of click to open expanded view
+handContainer.addEventListener('contextmenu', function(e) {
+	e.preventDefault();
 	setModal(gameState.hand, "Your Hand");
-});
+	return false;
+})
 
 modalClose.addEventListener('click', closeModal);
 
 function setModal(cardList, title) {
-	if(cardList.length == 0) {
+	if (cardList.length == 0) {
 		return;
 	}
 	modalTitleContainer.textContent = title
@@ -215,7 +281,7 @@ function setModal(cardList, title) {
 }
 
 //other player view creation
-
+//places other players that are not the immediate user, uses to placePlayerLine to set them
 function putUsers(users) {
 	let IMG_WIDTH = 100;
 	let board = document.querySelector('#table')
@@ -246,13 +312,13 @@ function putUsers(users) {
 	const leftUserTop = i => rect.bottom - leftInc * (i + 1) - IMG_WIDTH / 2
 	const leftKeepersLeft = i => rect.left + IMG_WIDTH * 0.2
 	const leftKeepersTop = i => rect.bottom - leftInc * (i + 1)
-	placePlayerLine(left, leftUserLeft, leftUserTop, leftKeepersLeft, leftKeepersTop, 90) 
+	placePlayerLine(left, leftUserLeft, leftUserTop, leftKeepersLeft, leftKeepersTop, 90)
 
 	const middleUserLeft = i => rect.left + middleInc * (i + 1) - IMG_WIDTH / 2
 	const middleUserTop = i => rect.top - IMG_WIDTH * 1.3
 	const middleKeepersLeft = i => rect.left + middleInc * (i + 1) - IMG_WIDTH / 4
 	const middleKeepersTop = i => rect.top + IMG_WIDTH * 0.1
-	placePlayerLine(middle, middleUserLeft, middleUserTop, middleKeepersLeft, middleKeepersTop, 0) 
+	placePlayerLine(middle, middleUserLeft, middleUserTop, middleKeepersLeft, middleKeepersTop, 0)
 
 	const rightUserLeft = i => rect.right
 	const rightUserTop = i => rect.top + rightInc * (i + 1) - IMG_WIDTH / 2
@@ -261,6 +327,7 @@ function putUsers(users) {
 	placePlayerLine(right, rightUserLeft, rightUserTop, rightKeepersLeft, rightKeepersTop, -90)
 }
 
+//places line of players (left, top, or right)
 function placePlayerLine(players, userLeft, userTop, keepersLeft, keepersTop, keeperRotation) {
 	let container = document.querySelector('#players-container')
 	for (let i = 0; i < players.length; i++) {
@@ -268,7 +335,8 @@ function placePlayerLine(players, userLeft, userTop, keepersLeft, keepersTop, ke
 		elem.style.left = `${userLeft(i)}px`
 		elem.style.top = `${userTop(i)}px`
 
-		let cardElem = createCardElement()
+		//calls method that sets up container for played keepers
+		let cardElem = createKeepersElement()
 		cardElem.style.left = `${keepersLeft(i)}px`
 		cardElem.style.top = `${keepersTop(i)}px`
 		cardElem.style.transform = `rotate(${keeperRotation}deg)`
@@ -279,11 +347,12 @@ function placePlayerLine(players, userLeft, userTop, keepersLeft, keepersTop, ke
 		spreadCards(cardElem, 80)
 
 		container.appendChild(elem)
-		container.appendChild(cardElem)
+		elem.appendChild(cardElem)
 	}
 }
 
-function createCardElement() {
+//used to set up container for keepers
+function createKeepersElement() {
 	let result = document.createElement('div')
 	result.classList.add('keepers')
 	return result
@@ -304,11 +373,15 @@ function createUserElement(name, cards) {
 	let cardsLabel = document.createElement('div')
 	cardsLabel.classList.add('card-num')
 	cardsLabel.textContent = `${cards}`
+	let plusOneElem = document.createElement('div')
+	plusOneElem.textContent = '+1'
+	plusOneElem.classList.add('plus-one')
 	let topLine = document.createElement('div')
 	topLine.classList.add('topline')
 	topLine.appendChild(nameLabel)
 	topLine.appendChild(cardsImg)
 	topLine.appendChild(cardsLabel)
+	topLine.appendChild(plusOneElem)
 	result.appendChild(topLine)
 	result.appendChild(profileImg)
 	return result
@@ -321,25 +394,41 @@ window.onresize = function () {
 }
 
 //board updating
-function updateRules(ruleList) {
+function updateHand() {
+	handContainer.innerHTML = ''
+	putCards(handContainer, gameState.hand, 100, 150);
+	spreadHand(handContainer);
+}
+
+function addCardtoHand() {
+	putCards(handContainer, ["Draw2"], 100, 150);
+	spreadHand(handContainer);
+}
+
+function removeCardByIndex(location, index) {
+	location.removeChild(location.childNodes[index]);
+	spreadHand(handContainer);
+}
+
+function updateRules() {
 	const elem = document.querySelector("#rule-cards")
 	elem.innerHTML = ''
-	putCards(elem, ruleList, 80, 120)
-	spreadCards(elem, 120)
+	putCards(elem, gameState.gameState.rules, 80, 120)
+	spreadOnTable(elem, 120)
 }
 
-function updateGoals(goalList) {
+function updateGoals() {
 	const elem = document.querySelector("#goal-cards")
 	elem.innerHTML = ''
-	putCards(elem, goalList, 80, 120)
-	spreadCards(elem, 80)
+	putCards(elem, gameState.gameState.goals, 80, 120)
+	spreadOnTable(elem, 80)
 }
 
-function updateDiscard(card) {
+function updateDiscard() {
 	const elem = document.querySelector("#discard-cards")
 	elem.innerHTML = ''
-	putCards(elem, card, 80, 120)
-	spreadCards(elem, 80)
+	putCards(elem, gameState.gameState.discard, 80, 120)
+	spreadOnTable(elem, 80)
 }
 
 function addBoardEventListeners() {
@@ -370,10 +459,67 @@ function putOwnKeepers(keepers) {
 
 putOwnKeepers(gameState.keepers)
 
+updateHand();
 updateRules(gameState.gameState.rules)
 updateGoals(gameState.gameState.goals)
 updateDiscard(gameState.gameState.discard)
 addBoardEventListeners();
+
+
+//code to make cards in hand draggable:
+Array.from(handContainer.children).forEach(elem => dragElement(elem));
+
+function dragElement(elmnt) {
+	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+	elmnt.onmousedown = dragMouseDown;
+	let currTop;
+	let currLeft;
+	let currTransform;
+
+	function dragMouseDown(e) {
+		//find and store the existing rotation angle
+		currTransform = elmnt.style.transform
+		let [firstPart, secondPart, thirdPart] = currTransform.split(' ')
+		//construct new transform to normalized rotation angle
+		let newTransform = 'rotate(0deg) ' + secondPart + ' ' + thirdPart;
+		elmnt.style.transform = newTransform;
+		//save current top and left properties for relocation to hand
+		currTop = elmnt.style.top
+		currLeft = elmnt.style.left
+
+		e = e || window.event;
+		e.preventDefault();
+		// get the mouse cursor position at startup:
+		pos3 = e.clientX;
+		pos4 = e.clientY;
+		document.onmouseup = stopDragging;
+		// call a function whenever the cursor moves:
+		document.onmousemove = cardDrag;
+	}
+
+	function cardDrag(e) {
+
+		e = e || window.event;
+		e.preventDefault();
+		// calculate the new cursor position:
+		pos1 = pos3 - e.clientX;
+		pos2 = pos4 - e.clientY;
+		pos3 = e.clientX;
+		pos4 = e.clientY;
+		// set the element's new position:
+		elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+		elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+	}
+
+	function stopDragging() {
+		// stop moving when mouse button is released:
+		elmnt.style.top = currTop;
+		elmnt.style.left = currLeft;
+		elmnt.style.transform = currTransform;
+		document.onmouseup = null;
+		document.onmousemove = null;
+	}
+}
 
 
 

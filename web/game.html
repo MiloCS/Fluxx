@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Acme">
     <link rel="icon" href="logo.png">
     <script defer type="text/javascript" src="view.js"></script>
+    <script defer type="text/javascript" src="gameComm.js"></script>
 </head>
 
 <body>
@@ -20,6 +21,8 @@
             <div id="players-container"></div>
             <div id="table">
                 <div id="table-middle">
+                    <div id="playstatus"></div>
+                    <!-- <br/> -->
                     <div id="rules" class="playspace">
                         <div class="playspace-title">RULES</div>
                         <div id="rule-cards"></div>
@@ -35,9 +38,12 @@
                 </div>
             </div>
         </div>
+        <div id="my-keepers">
+        </div>
         <div id="cards">
         </div>
     </div>
+    
     <div id="status-bar">
         <div id="text">Waiting for Milo</div>
         <div id="balls-container">
@@ -47,9 +53,6 @@
                 <div></div>
             </div>
         </div>
-    </div>
-    <div id="my-keepers">
-        
     </div>
     <div id="card-modal">
         <div id="modal-title"></div>

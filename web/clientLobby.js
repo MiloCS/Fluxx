@@ -1,4 +1,4 @@
-const socket = io('http://10.0.1.8:3000');
+const socket = io('/lobby');
 let room;
 //landing page elements
 const content = document.getElementById('content')
