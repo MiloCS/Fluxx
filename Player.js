@@ -11,7 +11,6 @@ class Player {
 	// discard a card
 	// cardlist = "h" for hand
 	// cardlist = "k" for keeper
-	// 
 	discard(cardlist, gamedata) {
 		name = "TODO" // wait for name of card discarded
 		let array;
@@ -29,5 +28,4 @@ class Player {
 		this.hand = this.hand.filter(c => c.name != name);
 		card.onPlay(this, gamedata)
 	}
-
 }

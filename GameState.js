@@ -7,24 +7,14 @@ class GameState {
 	// all the things happen in this class, GameData is manipulated by the GameState
 	constructor(gametype, players) {
 		this.gd = new GameData(gametype, players);
-		// let array = players;
-		// for (let i = array.length - 1; i > 0; i--) {
-    	// 	let j = Math.floor(Math.random() * (i + 1));
-    	// 	[array[i], array[j]] = [array[j], array[i]];
-    	// }
-		// this.players = array;
-		// //each player in the list of Players gets a ref to this.gd
-		// for (let i = 0; i < this.players.length; i++) {
-		// 	this.players[i].gamedata = this.gd;
-		// }
 	}
 
 	// Game setup: shuffle and deal
 	setup() {
 		this.gd.deck.shuffle();
-		for (let i = 0; i < this.players.length; i--) {
+		for (let i = 0; i < this.gd.players.length; i--) {
 			let cards = this.gd.deck.deal(3);
-			this.players[i - 1].hand = cards;
+			this.gd.players[i - 1].hand = cards;
 		}
 		this.update();
 	}
@@ -61,7 +51,7 @@ class GameState {
 		// check for winner
 		this.check_all_winner();
 		if (this.gd.winners != []) {
-			this.end_game();
+			this.end_game();  //TODO
 			return;
 		}
 		// if no winners, continue with either next play or next turn
@@ -74,26 +64,37 @@ class GameState {
 		}
 	}
 
+	// determine the next player
+	// returns the Player who goes next
+	determineNextPlayer(player) {
+		let pindex = this.gd.players.indexOf(player);
+		if (this.gd.reverseOrder) {
+			if (pindex == 0) {
+				return this.gd.players[this.gd.players.length - 1];
+			} else {
+				return this.gd.players[pindex - 1];
+			}
+		} else {
+			if (pindex == this.gd.players.length) {
+				return this.gd.players[0];
+			} else {
+				return this.gd.players[pindex + 1];
+			}
+		}
+	}
+
 	// This function ends a play and moves on to the next player if no winner
 	end_turn(player) {
 		// make all players comply with limits
 		this.comply_all_limits(true);
 		this.update();
-		// determine next player and start turn with next player
-		let nextPlayer;
-		let pindex = this.players.findIndex((p) => p == this.gd.activePlayer);
-		if (this.gd.reverseOrder) {
-			if (pindex == 0) {
-				pindex = this.players.length;
-			}
-			nextPlayer = this.players[pindex - 1];
+		// start turn with next player
+		if (this.gd.takeAnotherTurn) {
+			this.gd.takeAnotherTurn = false;
+			this.start_turn(player);
 		} else {
-			if (pindex == this.players.length) {
-				pindex = -1;
-			}
-			nextPlayer = this.players[pindex + 1];
+			this.start_turn(this.determineNextPlayer(player));
 		}
-		this.start_turn(player);
 	}
 
 	// this function makes players comply with limits
@@ -104,19 +105,19 @@ class GameState {
 			// stash the active player to check all
 			lastPlayer = this.gd.activePlayer;
 			this.gd.activePlayer = null;
-			this.players.forEach(player => this.gd.comply_player_limits(player));
+			this.gd.players.forEach(player => this.gd.comply_player_limits(player));
 			this.gd.activePlayer = lastPlayer;
 		} else {
-			this.players.forEach(player => this.gd.comply_player_limits(player));
+			this.gd.players.forEach(player => this.gd.comply_player_limits(player));
 		}
 	}
 
 	// this function checks all players for a winner
 	check_all_winner() {
-		for (var i = this.players.length - 1; i >= 0; i--) {
-			let winbool = this.gd.check_player_winner(this.players[i]);
+		for (var i = this.gd.players.length - 1; i >= 0; i--) {
+			let winbool = this.gd.check_player_winner(this.gd.players[i]);
 			if (winbool) {
-				this.gd.winners.push(this.players[i]);
+				this.gd.winner.push(this.players[i]);
 			}
 		}
 	}
@@ -156,7 +157,7 @@ class GameData {
 		this.hlim = null; // int
 		this.klim = null; // int
 		this.activePlayer = null; // int: the index in gs.players
-		this.winners = [];
+		this.winner = null;
 
 		// Players
 		let array = players;
@@ -167,7 +168,16 @@ class GameData {
 		this.players = array;
 
 		// Special case rules
+		this.doubleAgenda = false;
 		this.reverseOrder = false;
+		this.firstPlayRandom = false;
+		this.noHandBonus = false;
+		this.poorBonus = false;
+		this.richBonus = false;
+		this.inflation = false;
+
+		// Action special cases
+		this.takeAnotherTurn = false;
 
 		// Variables for turn-by-turn data
 		this.playedThisTurn = 0;
@@ -179,7 +189,11 @@ class GameData {
 				"rules": [],
 				"goals": [],
 				"discard": [],
-				"players": [] // id, name, hand[], keepers[]
+				"players": [], // id, name, hand[], keepers[]
+				"status": {
+					"activeStatus": "",
+					"inactiveStatus": ""
+				}
 			};
 	}
 
@@ -189,11 +203,11 @@ class GameData {
 		if (player == this.activePlayer) {
 			return;
 		}
-		while (player.keepers.length > this.klim) {
+		while (this.klim && player.keepers.length > this.klim) {
 			player.discard("k");
 			// send UPDATE (within discard?)
 		}
-		while (player.hand.length > this.hlim) {
+		while (this.hlim && player.hand.length > this.hlim) {
 			player.discard("h");
 			// send UPDATE (within discard?)
 		}
@@ -215,11 +229,17 @@ class GameData {
 		let pgs = {};
 		pgs.gameState = Object.assign({}, this.mgs);
 		delete pgs.gameState.players;
-		//find the current player in this.mgs, populate pgs. player, hand, keepers
+		delete pgs.
+		//find the current player in this.mgs, populate pgs. player, hand, keepers, status
 		let thisPJSON = this.mgs.players.find(p => p.pID == player.pID);
 		pgs.player = thisPJSON.pID;
 		pgs.hand = thisPJSON.hand;
 		pgs.keepers = thisPJSON.keepers;
+		if (player == this.activePlayer) {
+			pgs.status = this.mgs.status.activeStatus;
+		} else {
+			pgs.status = this.mgs.status.inactiveStatus;
+		}
 		delete thisPJSON
 		//sort through players with a map (need accesory function)
 		pgs.gameState.players = 

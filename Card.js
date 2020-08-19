@@ -3,7 +3,8 @@ class Card {
 		this.name = name;
 	}
 	onPlay(player, gamedata) {
-		console.log("Played " + this.name);
+		player.hand.filter(c => c != this);
+		console.log("Playing " + this.name);
 	}
 	toString() {
 		return this.name;
@@ -16,8 +17,20 @@ class Card {
 class NRule extends Card {
 	onPlay(player, gamedata) {
 		super.onPlay(player, gamedata);
-		// some stuff here with RULES
-		//TODO // then comply with limits!!!!!!!1
+		// Specifics to New Rules
+		for (let index = 0; index < gamedata.rules.length; index++) {
+			let r = gamedata.rules[index];
+			if ((typeof r != SpecialRule) && (typeof r == typeof this)) {
+				gamedata.discard.push(gamedata.rules.splice(index));
+				r.unrule();
+				break
+			}
+		}
+		gamedata.rules.push(this);
+	}
+	// call unrule when taken out of rules
+	unrule(gamedata) {
+		return;
 	}
 }
 
@@ -29,6 +42,10 @@ class DrawRule extends NRule {
 	onPlay(player, gamedata) {
 		super.onPlay(player, gamedata);
 		// stuff specific to Draw rules
+		gamedata.draws = this.d;
+	}
+	unrule(gamedata) {
+		gamedata.draws = 1;
 	}
 }
 
@@ -40,6 +57,10 @@ class PlayRule extends NRule {
 	onPlay(player, gamedata) {
 		super.onPlay(player, gamedata);
 		// stuff specific to Play rules
+		gamedata.plays = this.p;
+	}
+	unrule(gamedata) {
+		gamedata.plays = 1;
 	}
 }
 
@@ -59,6 +80,10 @@ class HLimRule extends LimRule {
 	onPlay(player, gamedata) {
 		super.onPlay(player, gamedata);
 		// stuff specific to hand limits
+		gamedata.hlim = this.lim;
+	}
+	unrule(gamedata) {
+		gamedata.hlim = this.lim;
 	}
 }
 
@@ -66,6 +91,25 @@ class KLimRule extends LimRule {
 	onPlay(player, gamedata) {
 		super.onPlay(player, gamedata);
 		// stuff specific to keeper limits
+		gamedata.klim = this.lim;
+	}
+	unrule(gamedata) {
+		gamedata.klim = this.lim;
+	}
+}
+
+class SpecialRule extends NRule {
+	// playMod: an action to be performed on play
+	constructor(name, playMod) {
+		super();
+		this.playMod = playMod;
+	}
+	onPlay(player, gamedata) {
+		super.onPlay(player, gamedata);
+		this.playMod(gamedata, true);
+	}
+	unrule(gamedata) {
+		this.playMod(gamedata, false);
 	}
 }
 
@@ -77,6 +121,8 @@ class Action extends Card {
 	onPlay(player, gamedata) {
 		super.onPlay(player, gamedata);
 		// stuff specific for Action cards
+		this.a(player, gamedata);
+		gamedata.deck.discard.push(this);
 	}
 }
 
@@ -89,7 +135,8 @@ class Keeper extends Card {
 	}
 	onPlay(player, gamedata) {
 		super.onPlay(player, gamedata);
-		// add keeper to players
+		// add keeper to player's keepers
+		player.keepers.push(this);
 	}
 }
 
@@ -102,6 +149,7 @@ class Goal extends Card {
 	onPlay(player, gamedata) {
 		super.onPlay(player, gamedata);
 		// put goal in play
+		gamedata.goals.push(this)
 	}
 	isMet() {
 		console.log("this is just a generic goal");
@@ -129,6 +177,7 @@ class SpecialGoal extends Goal {
 	// wincon: function
 	isMet() {
 		// call the function in wcon
+		this.wcon();
 	}
 }
 
