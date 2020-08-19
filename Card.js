@@ -26,7 +26,7 @@ class NRule extends Card {
 				break
 			}
 		}
-		gamedata.rules.push(this);
+		gamedata.mgs.rules.push(this);
 	}
 	// call unrule when taken out of rules
 	unrule(gamedata) {
@@ -149,35 +149,57 @@ class Goal extends Card {
 	onPlay(player, gamedata) {
 		super.onPlay(player, gamedata);
 		// put goal in play
-		gamedata.goals.push(this)
+		gamedata.mgs.goals.push(this)
 	}
-	isMet() {
-		console.log("this is just a generic goal");
-		return null;
+	// returns a list of players who meet the goal
+	isMet(gamedata) {
+		console.log("this is just a generic goal, no winners");
+		return [];
 	}
 }
 
 class TwoKeep extends Goal {
 	// wincon: [kid Y, kid Y]
-	isMet() {
+	isMet(gamedata) {
 		// check players' keepers in wcon
-		// return player who has both or null
+		// return list containing player who has both or []
+		winners = [];
+		gamedata.players.forEach(p => {
+			kIDs = [];
+			p.keepers.forEach(k => {kIDs.push(k.kid)});
+			if (kIDs.includes(this.wcon[0]) 
+				&& kIDs.includes(this.wcon[1])) {
+				winners.push(p);
+			}
+		});
+		return winners;
 	}
 }
 
 class OneKeep extends Goal {
 	// wincon: [kid Y, kid N]
-	isMet() {
+	isMet(gamedata) {
 		// check that no one has the banned keeper
 		// return player with the keeper or null
+		winners = [];
+		gamedata.players.forEach(p => {
+			kIDs = [];
+			p.keepers.forEach(k => {kIDs.push(k.kid)});
+			if (kIDs.includes(this.wcon[1])) {
+				return [];
+			} else if (kIDs.includes(this.wcon[0])) {
+				winners.push(p);
+			}
+		})
+		return winners;
 	}
 }
 
 class SpecialGoal extends Goal {
 	// wincon: function
-	isMet() {
+	isMet(gamedata) {
 		// call the function in wcon
-		this.wcon();
+		return this.wcon(gamedata);
 	}
 }
 

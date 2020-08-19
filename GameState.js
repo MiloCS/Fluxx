@@ -1,10 +1,9 @@
 D = require('./Deck');
 INDEX = require('./index')
-//require players?
 
 
 class GameState {
-	// all the things happen in this class, GameData is manipulated by the GameState
+	// Game happens in this class, GameData is manipulated by functions here
 	constructor(gametype, players) {
 		this.gd = new GameData(gametype, players);
 	}
@@ -16,7 +15,7 @@ class GameState {
 			let cards = this.gd.deck.deal(3);
 			this.gd.players[i - 1].hand = cards;
 		}
-		this.update();
+		this.gd.update();
 	}
 
 	// Start a turn for a given player
@@ -27,7 +26,7 @@ class GameState {
 		for (let i = 0; i < drawn; i++) {
 			player.hand.push(drawnCards[i]);
 		}
-		this.update();
+		this.gd.update();
 		this.gd.drawnThisTurn = drawn;
 		this.gd.playedThisTurn = 0;
 		this.run_play(player);
@@ -43,10 +42,21 @@ class GameState {
 		if (toDraw < 0) {
 			let drawnCards = this.gd.deck.draw(toDraw);
 			player.hand = player.hand.concat(drawnCards);
-			this.update();
+			this.gd.update();
 		}
-		// wait for play - MILO can we run a function somewhere that will return once a player plays a card?
-		player.play(this.gd);
+		// determine available actions
+		availableActions = [];
+		if (this.gd.playedThisTurn < this.gd.plays && player.hand.length > 0) {
+			availableActions.push(player.play(this.gd));
+		}
+		// await player action
+		if (availableActions != []){
+			console.log("TODO: await player action")
+		} else {
+			this.end_turn(player);
+		}
+		this.gd.update();
+		//player.play(this.gd);
 		// send UPDATE (maybe inside function?)
 		// check for winner
 		this.check_all_winner();
@@ -56,11 +66,11 @@ class GameState {
 		}
 		// if no winners, continue with either next play or next turn
 		// check if more plays left, run another play if so.
-		this.gd.playedThisTurn += 1;
+		// this.gd.playedThisTurn += 1; // move this to player play action!!!
 		if (this.gd.playedThisTurn >= this.gd.plays) {
 			this.end_turn(player);
 		} else {
-			run_play(player);
+			this.run_play(player);
 		}
 	}
 
@@ -87,7 +97,7 @@ class GameState {
 	end_turn(player) {
 		// make all players comply with limits
 		this.comply_all_limits(true);
-		this.update();
+		this.gd.update();
 		// start turn with next player
 		if (this.gd.takeAnotherTurn) {
 			this.gd.takeAnotherTurn = false;
@@ -105,42 +115,42 @@ class GameState {
 			// stash the active player to check all
 			lastPlayer = this.gd.activePlayer;
 			this.gd.activePlayer = null;
-			this.gd.players.forEach(player => this.gd.comply_player_limits(player));
+			this.gd.players.forEach(player => this.comply_player_limits(player));
 			this.gd.activePlayer = lastPlayer;
 		} else {
-			this.gd.players.forEach(player => this.gd.comply_player_limits(player));
+			this.gd.players.forEach(player => this.comply_player_limits(player));
+		}
+	}
+
+	// make the given player comply with limits if not the active player
+	comply_player_limits(player) {
+		if (player == this.gd.activePlayer) {
+			return;
+		}
+		while (this.gd.klim && player.keepers.length > this.gd.klim) {
+			player.discard("k");
+			// send UPDATE (within discard?)
+		}
+		while (this.gd.hlim && player.hand.length > this.gd.hlim) {
+			player.discard("h");
+			// send UPDATE (within discard?)
 		}
 	}
 
 	// this function checks all players for a winner
+	// saves the winners to this.gd.winners
 	check_all_winner() {
-		for (var i = this.gd.players.length - 1; i >= 0; i--) {
-			let winbool = this.gd.check_player_winner(this.gd.players[i]);
-			if (winbool) {
-				this.gd.winner.push(this.players[i]);
-			}
-		}
+		winners = [];
+		this.gd.goals.forEach(g => {
+			gwinners = g.isMet(this.gd);
+			gwinners.forEach(w => {
+				if (!winners.includes(w)){
+					winners.push(w);
+				}
+			})
+		})
+		this.gd.winners = winners;
 	}
-
-	// Update: Send to each player their appropriate pgs
-	update() {
-		this.updateMGS();
-		this.gd.players.forEach(p => {
-			let pgs = this.gd.generatePlayerGameState(p);
-			INDEX.update(pgs, p.pID);
-		});
-	}
-
-	// Pull in player data into player portion of MGS
-	updateMGS() {
-		this.gd.mgs.discard = this.gd.deck.discard;
-		this.gd.players.forEach(p => {
-			pJSON = this.gd.mgs.players.find(p => p.pID == player.pID);
-			pJSON.hand = p.hand;
-			pJSON.keepers = p.keepers;
-		});
-	}
-
 }
 
 
@@ -197,31 +207,14 @@ class GameData {
 			};
 	}
 
-
-	// make the given player comply with limits if not the active player
-	comply_player_limits(player) {
-		if (player == this.activePlayer) {
-			return;
-		}
-		while (this.klim && player.keepers.length > this.klim) {
-			player.discard("k");
-			// send UPDATE (within discard?)
-		}
-		while (this.hlim && player.hand.length > this.hlim) {
-			player.discard("h");
-			// send UPDATE (within discard?)
-		}
-	}
-
-	// check if the given player is a winner
-	// return true if so or false
-	check_player_winner(player) {
-		for (var i = this.goals.length - 1; i >= 0; i--) {
-			if (this.goals[i].winner(player)) {
-				return true;
-			}
-		}
-		return false;
+	// Pull in player data into player portion of MGS
+	updateMGS() {
+		this.mgs.discard = this.deck.discard;
+		this.players.forEach(p => {
+			pJSON = this.mgs.players.find(p => p.pID == player.pID);
+			pJSON.hand = p.hand;
+			pJSON.keepers = p.keepers;
+		});
 	}
 
 	// Generate the player game state for the given player
@@ -229,7 +222,7 @@ class GameData {
 		let pgs = {};
 		pgs.gameState = Object.assign({}, this.mgs);
 		delete pgs.gameState.players;
-		delete pgs.
+		delete pgs.gameState.status;
 		//find the current player in this.mgs, populate pgs. player, hand, keepers, status
 		let thisPJSON = this.mgs.players.find(p => p.pID == player.pID);
 		pgs.player = thisPJSON.pID;
@@ -255,6 +248,13 @@ class GameData {
 		delete nPJSON.hand;
 		return nPJSON;
 	}
+	
+	// Update: Send to each player their appropriate pgs
+	update() {
+		this.updateMGS();
+		this.players.forEach(p => {
+			let pgs = this.generatePlayerGameState(p);
+			INDEX.update(pgs, p.pID);
+		});
+	}
 }
-
-

@@ -1,4 +1,5 @@
 C = require('./Card');
+const LOVE_ID = 6;
 
 let actions = [
 	// 0. Discard and Draw
@@ -115,6 +116,50 @@ let actions = [
 	function(player, gamedata) {
 		console.log("TODO");
 	}
+];
+
+let specialGoalConditions = [
+	// 0. 10 Cards in Hand
+	function(gamedata) {
+		winners = [];
+		gamedata.players.forEach(p => {
+			hlen = p.hand.length
+			if(hlen >= 10) {
+				if (winners == [] || hlen > winners[0].hand.length) {
+					winners = [p];
+				} else if (hlen == winners[0].hand.length) {
+					winners.push(p);
+				}
+			}
+		})
+		return winners;
+	},
+	// 1. 5 Keepers
+	function(gamedata) {
+		winners = [];
+		gamedata.players.forEach(p => {
+			klen = p.keepers.length
+			if(klen >= 10) {
+				if (winners == [] || klen > winners[0].keepers.length) {
+					winners = [p];
+				}
+				else if (hlen == winners[0].keepers.length) {
+					winners.push(p);
+				}
+			}
+		})
+		return winners;
+	},
+	// 2. All You Need is Love
+	function(gamedata) {
+		winners = [];
+		gamedata.players.forEach(p => {
+			if (p.keepers.length == 1 && p.keepers[0].kid == LOVE_ID) {
+					winners.push(p);
+				}
+		})
+		return winners;
+	}
 ]
 
 let f3_0 = [
@@ -192,9 +237,9 @@ let f3_0 = [
 	new C.Keeper("Time", 15),
 	new C.Keeper("The Toaster", 16),
 	new C.Keeper("War", 17),
-	new C.SpecialGoal("10 Cards in Hand", function() {console.log("TODO")}),
-	new C.SpecialGoal("5 Keepers", function() {console.log("TODO")}),
-	new C.SpecialGoal("All You Need is Love", function() {console.log("TODO")}),
+	new C.SpecialGoal("10 Cards in Hand", specialGoalConditions[0]),
+	new C.SpecialGoal("5 Keepers", specialGoalConditions[1]),
+	new C.SpecialGoal("All You Need is Love", specialGoalConditions[2]),
 	new C.TwoKeep("The Appliances", [14, 16]),
 	new C.TwoKeep("Baked Goods", [1, 3]),
 	new C.TwoKeep("Bed Time", [12, 15]),

@@ -26,6 +26,7 @@ class Player {
 		name = "TODO" // wait for name of card played
 		card = this.hand.find(c => c.name == name);
 		this.hand = this.hand.filter(c => c.name != name);
-		card.onPlay(this, gamedata)
+		card.onPlay(this, gamedata);
+		gamedata.playedThisTurn += 1;
 	}
 }
