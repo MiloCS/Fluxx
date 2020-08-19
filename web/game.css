@@ -135,7 +135,9 @@ body {
 	padding: 4px;
 	border-radius: 2px;
 	display: inline-block;
+	transition: ease 0.2s;
 }
+
 
 #rule-cards {
 	margin-top: 0.2em;

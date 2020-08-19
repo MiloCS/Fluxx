@@ -1,3 +1,8 @@
+/* This file serves as a kind of general interface for dealing with DOM elements and actions
+that the player takes on the game page. It selects many of the necessary elements from the DOM
+and provides some basic interaction with them, as well as with dynamic element distribution on the
+page*/
+
 let gameState = {
 	"player": "id",
 	"hand": [
@@ -67,49 +72,13 @@ let modalCardContainer = document.querySelector('#modal-card-container');
 let modalTitleContainer = document.querySelector('#modal-title');
 let playersContainer = document.querySelector('#players-container');
 let playStatus = document.querySelector('#playstatus');
-let rulesContainer = document.querySelector('#rules')
-
-rulesContainer.onmouseenter = function() {
-	console.log('mouse over rules')
-	rulesContainer.style.transform = 'scale(1.06)'
-}
-
-rulesContainer.onmouseleave = function() {
-	rulesContainer.style.transform = 'scale(1)'
-}
+let rulesContainer = document.querySelector('#rules');
+let discardContainer = document.querySelector('#discard');
+let goalsContainer = document.querySelector('#goal');
 
 let modalOpen = false;
 let focusedCard = -1;
 let userTurn = false;
-
-function changeHandNum(playerIndex, newNum) {
-	let player = playersContainer.children[playerIndex];
-	let numElem = player.getElementsByClassName('card-num')[0];
-	numElem.innerText = newNum;
-}
-
-function drawCard(playerIndex, newNum) {
-	drawCardAnimate(playerIndex);
-	changeHandNum(playerIndex, newNum);
-}
-
-function drawCardAnimate(playerIndex) {
-
-	console.log('animating');
-	let animation = [
-		{ opacity: '100%' },
-		{ opacity: '50%' },
-		{ opacity: '0%' }
-	]
-	let elem = playersContainer.children[playerIndex].getElementsByClassName('plus-one')[0]
-
-	elem.animate(animation, {
-		duration: 1000,
-		iterations: 1
-	})
-}
-
-let expanded = false;
 
 function spreadHand(cardContainer, expanded=false) {
 	let cards = cardContainer.children;
@@ -244,7 +213,8 @@ function spreadOnTable(cardContainer, width) {
 	}
 }
 
-
+//this was a test feature, it is on longer in use
+//(and will not work because allCards variable is no longer present)
 function selectRandomCards(array) {
 	let final = [];
 	let number = Math.random() * 10;
@@ -256,6 +226,7 @@ function selectRandomCards(array) {
 }
 
 //basic modal opening and closing event listening
+//this is hand opening on regular click instead of right click
 // handContainer.addEventListener('click', function () {
 // 	setModal(gameState.hand, "Your Hand");
 // });
@@ -362,10 +333,10 @@ function createUserElement(name, cards) {
 	let result = document.createElement('div')
 	result.classList.add('user')
 	let profileImg = document.createElement('img')
-	profileImg.src = 'user.png'
+	profileImg.src = 'imgs/user.png'
 	profileImg.classList.add('profile-img')
 	let cardsImg = document.createElement('img')
-	cardsImg.src = 'cards.png'
+	cardsImg.src = 'imgs/cards.png'
 	cardsImg.classList.add('cards-img')
 	let nameLabel = document.createElement('span')
 	nameLabel.classList.add('name')
@@ -464,62 +435,6 @@ updateRules(gameState.gameState.rules)
 updateGoals(gameState.gameState.goals)
 updateDiscard(gameState.gameState.discard)
 addBoardEventListeners();
-
-
-//code to make cards in hand draggable:
-Array.from(handContainer.children).forEach(elem => dragElement(elem));
-
-function dragElement(elmnt) {
-	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-	elmnt.onmousedown = dragMouseDown;
-	let currTop;
-	let currLeft;
-	let currTransform;
-
-	function dragMouseDown(e) {
-		//find and store the existing rotation angle
-		currTransform = elmnt.style.transform
-		let [firstPart, secondPart, thirdPart] = currTransform.split(' ')
-		//construct new transform to normalized rotation angle
-		let newTransform = 'rotate(0deg) ' + secondPart + ' ' + thirdPart;
-		elmnt.style.transform = newTransform;
-		//save current top and left properties for relocation to hand
-		currTop = elmnt.style.top
-		currLeft = elmnt.style.left
-
-		e = e || window.event;
-		e.preventDefault();
-		// get the mouse cursor position at startup:
-		pos3 = e.clientX;
-		pos4 = e.clientY;
-		document.onmouseup = stopDragging;
-		// call a function whenever the cursor moves:
-		document.onmousemove = cardDrag;
-	}
-
-	function cardDrag(e) {
-
-		e = e || window.event;
-		e.preventDefault();
-		// calculate the new cursor position:
-		pos1 = pos3 - e.clientX;
-		pos2 = pos4 - e.clientY;
-		pos3 = e.clientX;
-		pos4 = e.clientY;
-		// set the element's new position:
-		elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-		elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-	}
-
-	function stopDragging() {
-		// stop moving when mouse button is released:
-		elmnt.style.top = currTop;
-		elmnt.style.left = currLeft;
-		elmnt.style.transform = currTransform;
-		document.onmouseup = null;
-		document.onmousemove = null;
-	}
-}
 
 
 
